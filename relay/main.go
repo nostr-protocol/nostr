@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"net/http"
 	"os"
 	"time"
@@ -14,9 +13,9 @@ import (
 )
 
 type Settings struct {
-	Host             string `envconfig:"HOST" default:"0.0.0.0"`
-	Port             string `envconfig:"PORT" default:"7447"`
-	QLDatabase       string `envconfig:"QL_DATABASE"`
+	Host string `envconfig:"HOST" default:"0.0.0.0"`
+	Port string `envconfig:"PORT" default:"7447"`
+
 	PostgresDatabase string `envconfig:"POSTGRESQL_DATABASE"`
 	SQLiteDatabase   string `envconfig:"SQLITE_DATABASE"`
 }
@@ -37,15 +36,6 @@ func main() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to open database")
 	}
-	err = db.Ping()
-	if err != nil {
-		log.Fatal().Err(err).Msg("failed to connect to database")
-	}
-
-	// create tables, ignore errors
-	b, _ := ioutil.ReadFile("schema.sql")
-	_, err = db.Exec(string(b))
-	log.Print(err)
 
 	router.Path("/query_users").Methods("GET").HandlerFunc(queryUsers)
 	router.Path("/fetch_user_updates").Methods("GET").HandlerFunc(fetchUserUpdates)

@@ -1,7 +1,9 @@
 package main
 
 import (
+	"crypto/sha256"
 	"database/sql"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -73,7 +75,18 @@ func saveUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// check serialization and signature
+	// check serialization
+	serialized, err := evt.Serialize()
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+
+	// assign ID
+	hash := sha256.Sum256(serialized)
+	evt.ID = hex.EncodeToString(hash[:])
+
+	// check signature (requires the ID to be set)
 	if ok, err := evt.CheckSignature(); err != nil {
 		w.WriteHeader(400)
 		json.NewEncoder(w).Encode(ErrorResponse{err})
@@ -86,9 +99,9 @@ func saveUpdate(w http.ResponseWriter, r *http.Request) {
 
 	// insert
 	_, err = db.Exec(`
-        INSERT INTO event (pubkey, time, kind, content, signature)
-        VALUES ($1, $2, $3, $4, $5)
-    `, evt.Pubkey, evt.Time, evt.Kind, evt.Content, evt.Signature)
+        INSERT INTO event (id, pubkey, time, kind, reference, content, signature)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `, evt.ID, evt.Pubkey, evt.Time, evt.Kind, evt.Reference, evt.Content, evt.Signature)
 	if err != nil {
 		w.WriteHeader(500)
 		log.Warn().Err(err).Str("pubkey", evt.Pubkey).Msg("failed to save")

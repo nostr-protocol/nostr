@@ -2,9 +2,9 @@ package main
 
 import (
 	"bytes"
-	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
+	"errors"
 	"fmt"
 
 	"github.com/btcsuite/btcd/btcec"
@@ -18,6 +18,8 @@ const (
 )
 
 type Event struct {
+	ID string `db:"id"` // it's the hash of the serialized event
+
 	Pubkey string `db:"pubkey"`
 	Time   uint32 `db:"time"`
 
@@ -26,6 +28,7 @@ type Event struct {
 	// - text_note
 	// - delete
 
+	Reference string `db:"reference"` // the id of another event, optional
 	Content   string `db:"content"`
 	Signature string `db:"signature"`
 }
@@ -35,7 +38,7 @@ type Event struct {
 func (evt *Event) Serialize() ([]byte, error) {
 	b := bytes.Buffer{}
 
-	// version: 0
+	// version: 0 (only because if more fields are added later the id will not match)
 	b.Write([]byte{0})
 
 	// pubkey
@@ -68,6 +71,20 @@ func (evt *Event) Serialize() ([]byte, error) {
 		return nil, err
 	}
 
+	// reference
+	if len(evt.Reference) != 0 && len(evt.Reference) != 64 {
+		return nil, errors.New("reference must be either blank or 32 bytes")
+	}
+	if evt.Reference != "" {
+		reference, err := hex.DecodeString(evt.Reference)
+		if err != nil {
+			return nil, errors.New("reference is an invalid hex string")
+		}
+		if _, err = b.Write(reference); err != nil {
+			return nil, err
+		}
+	}
+
 	// content
 	if _, err = b.Write([]byte(evt.Content)); err != nil {
 		return nil, err
@@ -76,15 +93,10 @@ func (evt *Event) Serialize() ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-// CheckSignature checks if the signature is valid for the serialized event.
-// It will call Serialize() and return an error if that raises an error or if
-// the signature itself is invalid.
+// CheckSignature checks if the signature is valid for the id
+// (which is a hash of the serialized event content).
+// returns an error if the signature itself is invalid.
 func (evt Event) CheckSignature() (bool, error) {
-	serialized, err := evt.Serialize()
-	if err != nil {
-		return false, fmt.Errorf("serialization error: %w", err)
-	}
-
 	// validity of these is checked by Serialize()
 	pubkeyb, _ := hex.DecodeString(evt.Pubkey)
 	pubkey, _ := btcec.ParsePubKey(pubkeyb, btcec.S256())
@@ -98,6 +110,6 @@ func (evt Event) CheckSignature() (bool, error) {
 		return false, fmt.Errorf("failed to parse DER signature: %w", err)
 	}
 
-	hash := sha256.Sum256(serialized)
-	return signature.Verify(hash[:], pubkey), nil
+	hash, _ := hex.DecodeString(evt.ID)
+	return signature.Verify(hash, pubkey), nil
 }
