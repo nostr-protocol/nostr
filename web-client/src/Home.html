@@ -1,0 +1,61 @@
+<template>
+  <form @submit="publishNote">
+    <legend>Publishing to {{ writeServersList }}</legend>
+    <label
+      >Write anything:
+      <textarea :disabled="publishing" v-model="text"></textarea>
+    </label>
+    <button :disabled="publishing">Publish</button>
+  </form>
+  <p>Data providers: {{ readServersList }}</p>
+  <div v-if="$store.state.loadingNotes">
+    <p>Loading notes...</p>
+  </div>
+  <div v-else-if="$store.state.following.length === 0">
+    <p>You're not following anyone.</p>
+  </div>
+  <div v-else-if="$store.state.notes.length === 0">
+    <p>Didn't find any data.</p>
+  </div>
+  <div v-else>
+    <div v-for="note in $store.state.notes">
+      <Note v-bind="note" :key="note.id" />
+    </div>
+  </div>
+</template>
+
+<script>
+  export default {
+    data() {
+      return {text: '', publishing: false}
+    },
+    computed: {
+      readServersList() {
+        return JSON.stringify(this.$store.getters.readServers)
+          .replace(/"/g, '')
+          .replace(/,/g, ' ')
+      },
+      writeServersList() {
+        return JSON.stringify(this.$store.getters.writeServers)
+          .replace(/"/g, '')
+          .replace(/,/g, ' ')
+      }
+    },
+    methods: {
+      async publishNote(ev) {
+        ev.preventDefault()
+        this.publishing = true
+
+        try {
+          await this.$store.dispatch('publishNote', this.text)
+          this.text = ''
+        } catch (err) {
+          console.log('error publishing', err)
+        }
+        this.publishing = false
+      }
+    }
+  }
+</script>
+
+<style></style>

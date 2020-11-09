@@ -1,0 +1,21 @@
+<template>
+  <div><b>Secret Key:</b> {{ $store.getters.privkeyHex }}</div>
+  <div>
+    <b>Relays:</b>
+    {{ JSON.stringify($store.state.relays) }}
+  </div>
+  <div>
+    <b>Following:</b>
+    {{ JSON.stringify($store.state.following) }}
+  </div>
+</template>
+
+<script>
+  export default {
+    data() {
+      return {}
+    }
+  }
+</script>
+
+<style></style>

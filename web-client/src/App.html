@@ -1,0 +1,33 @@
+<template>
+  <div class="nav">
+    <router-link to="/setup">Setup</router-link>
+    <span class="pubkey">{{ $store.getters.pubKeyHex }}</span>
+    <router-link to="/">Home</router-link>
+  </div>
+  <div>
+    <router-view />
+  </div>
+</template>
+
+<script>
+  export default {}
+</script>
+
+<style>
+  .nav {
+    display: flex;
+    align-items: center;
+  }
+  .nav > * {
+    margin: 0 10px;
+  }
+  .pubkey {
+    display: inline-block;
+    width: 160px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  .pubkey:hover {
+    width: auto;
+  }
+</style>
