@@ -11,10 +11,9 @@ import (
 )
 
 const (
-	EventSetMetadata     uint8 = 0
-	EventTextNote        uint8 = 1
-	EventDelete          uint8 = 2
-	EventRecommendServer uint8 = 3
+	KindSetMetadata     uint8 = 0
+	KindTextNote        uint8 = 1
+	KindRecommendServer uint8 = 2
 )
 
 type Event struct {
@@ -24,9 +23,6 @@ type Event struct {
 	Time   uint32 `db:"time"`
 
 	Kind uint8 `db:"kind"`
-	// - set_metadata
-	// - text_note
-	// - delete
 
 	Reference string `db:"reference"` // the id of another event, optional
 	Content   string `db:"content"`
