@@ -17,16 +17,16 @@ const (
 )
 
 type Event struct {
-	ID string `db:"id"` // it's the hash of the serialized event
+	ID string `db:"id" json:"id"` // it's the hash of the serialized event
 
-	Pubkey string `db:"pubkey"`
-	Time   uint32 `db:"time"`
+	Pubkey    string `db:"pubkey" json:"pubkey"`
+	CreatedAt uint32 `db:"created_at" json:"created_at"`
 
-	Kind uint8 `db:"kind"`
+	Kind uint8 `db:"kind" json:"kind"`
 
-	Reference string `db:"reference"` // the id of another event, optional
-	Content   string `db:"content"`
-	Signature string `db:"signature"`
+	Ref     string `db:"ref" json:"ref"` // the id of another event, optional
+	Content string `db:"content" json:"content"`
+	Sig     string `db:"sig" json:"sig"`
 }
 
 // Serialize outputs a byte array that can be hashed/signed to identify/authenticate
@@ -53,9 +53,9 @@ func (evt *Event) Serialize() ([]byte, error) {
 		return nil, err
 	}
 
-	// time
+	// created_at
 	var timeb [4]byte
-	binary.BigEndian.PutUint32(timeb[:], evt.Time)
+	binary.BigEndian.PutUint32(timeb[:], evt.CreatedAt)
 	if _, err := b.Write(timeb[:]); err != nil {
 		return nil, err
 	}
@@ -67,12 +67,12 @@ func (evt *Event) Serialize() ([]byte, error) {
 		return nil, err
 	}
 
-	// reference
-	if len(evt.Reference) != 0 && len(evt.Reference) != 64 {
+	// ref
+	if len(evt.Ref) != 0 && len(evt.Ref) != 64 {
 		return nil, errors.New("reference must be either blank or 32 bytes")
 	}
-	if evt.Reference != "" {
-		reference, err := hex.DecodeString(evt.Reference)
+	if evt.Ref != "" {
+		reference, err := hex.DecodeString(evt.Ref)
 		if err != nil {
 			return nil, errors.New("reference is an invalid hex string")
 		}
@@ -97,7 +97,7 @@ func (evt Event) CheckSignature() (bool, error) {
 	pubkeyb, _ := hex.DecodeString(evt.Pubkey)
 	pubkey, _ := btcec.ParsePubKey(pubkeyb, btcec.S256())
 
-	bsig, err := hex.DecodeString(evt.Signature)
+	bsig, err := hex.DecodeString(evt.Sig)
 	if err != nil {
 		return false, fmt.Errorf("signature is invalid hex: %w", err)
 	}

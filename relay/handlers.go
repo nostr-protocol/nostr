@@ -6,8 +6,12 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
+
+	"gopkg.in/antage/eventsource.v1"
 )
 
 type ErrorResponse struct {
@@ -34,28 +38,70 @@ func queryUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(found)
 }
 
-func fetchUserUpdates(w http.ResponseWriter, r *http.Request) {
+func listenUpdates(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
-	key := r.URL.Query().Get("key")
+	// will return past items then track changes from these keys:
+	keys, _ := r.URL.Query()["key"]
 
+	es := eventsource.New(
+		eventsource.DefaultSettings(),
+		func(r *http.Request) [][]byte {
+			return [][]byte{
+				[]byte("X-Accel-Buffering: no"),
+				[]byte("Cache-Control: no-cache"),
+				[]byte("Content-Type: text/event-stream"),
+				[]byte("Connection: keep-alive"),
+				[]byte("Access-Control-Allow-Origin: *"),
+			}
+		},
+	)
+
+	go func() {
+		time.Sleep(2 * time.Second)
+		es.SendRetryMessage(3 * time.Second)
+	}()
+
+	go func() {
+		for {
+			time.Sleep(25 * time.Second)
+			es.SendEventMessage("", "keepalive", "")
+		}
+	}()
+
+	es.ServeHTTP(w, r)
+
+	// past events
+	inkeys := make([]string, 0, len(keys))
+	for _, key := range keys {
+		// to prevent sql attack here we will check if these keys are valid 33-byte hex
+		parsed, err := hex.DecodeString(key)
+		if err != nil || len(parsed) != 33 {
+			continue
+		}
+		inkeys = append(inkeys, fmt.Sprintf("'%x'", parsed))
+	}
 	var lastUpdates []Event
 	err := db.Select(&lastUpdates, `
         SELECT *
         FROM event
-        WHERE pubkey = $1
-        ORDER BY time DESC
-        LIMIT 25
-    `, key)
-	if err == sql.ErrNoRows {
-		lastUpdates = make([]Event, 0)
-	} else if err != nil {
+        WHERE pubkey IN (`+strings.Join(inkeys, ",")+`)
+          AND created_at > $1
+        ORDER BY created_at DESC
+    `, time.Now().AddDate(0, 0, -5).Unix())
+	if err != nil && err != sql.ErrNoRows {
 		w.WriteHeader(500)
-		log.Warn().Err(err).Str("key", key).Msg("failed to fetch updates")
+		log.Warn().Err(err).Interface("keys", keys).Msg("failed to fetch updates")
 		return
 	}
 
-	json.NewEncoder(w).Encode(lastUpdates)
+	for _, evt := range lastUpdates {
+		jevent, _ := json.Marshal(evt)
+		es.SendEventMessage(string(jevent), "event", "")
+	}
+
+	// listen to new events
+
 }
 
 func saveUpdate(w http.ResponseWriter, r *http.Request) {
@@ -65,19 +111,24 @@ func saveUpdate(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&evt)
 	if err != nil {
 		w.WriteHeader(400)
+		log.Warn().Err(err).Msg("couldn't decode body")
 		return
 	}
 
 	// safety checks
 	now := time.Now().UTC().Unix()
-	if uint32(now-3600) > evt.Time || uint32(now+3600) < evt.Time {
+	if uint32(now-3600) > evt.CreatedAt || uint32(now+3600) < evt.CreatedAt {
 		w.WriteHeader(400)
+		log.Warn().Err(err).Time("now", time.Unix(now, 0)).
+			Time("event", time.Unix(int64(evt.CreatedAt), 0)).
+			Msg("time mismatch")
 		return
 	}
 
 	// check serialization
 	serialized, err := evt.Serialize()
 	if err != nil {
+		log.Warn().Err(err).Msg("serialization error")
 		w.WriteHeader(400)
 		return
 	}
@@ -88,10 +139,12 @@ func saveUpdate(w http.ResponseWriter, r *http.Request) {
 
 	// check signature (requires the ID to be set)
 	if ok, err := evt.CheckSignature(); err != nil {
+		log.Warn().Err(err).Msg("signature verification error")
 		w.WriteHeader(400)
 		json.NewEncoder(w).Encode(ErrorResponse{err})
 		return
 	} else if !ok {
+		log.Warn().Err(err).Msg("signature invalid")
 		w.WriteHeader(400)
 		json.NewEncoder(w).Encode(ErrorResponse{errors.New("invalid signature")})
 		return
@@ -99,12 +152,12 @@ func saveUpdate(w http.ResponseWriter, r *http.Request) {
 
 	// insert
 	_, err = db.Exec(`
-        INSERT INTO event (id, pubkey, time, kind, reference, content, signature)
+        INSERT INTO event (id, pubkey, created_at, kind, ref, content, sig)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
-    `, evt.ID, evt.Pubkey, evt.Time, evt.Kind, evt.Reference, evt.Content, evt.Signature)
+    `, evt.ID, evt.Pubkey, evt.CreatedAt, evt.Kind, evt.Ref, evt.Content, evt.Sig)
 	if err != nil {
-		w.WriteHeader(500)
 		log.Warn().Err(err).Str("pubkey", evt.Pubkey).Msg("failed to save")
+		w.WriteHeader(500)
 		return
 	}
 

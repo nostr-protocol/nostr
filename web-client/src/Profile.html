@@ -1,5 +1,35 @@
-<template></template>
+<template>
+  <div>
+    <h1>{{ $route.params.key }}</h1>
+    <div v-if="following">
+      <button @click="unfollow">Unfollow</button>
+    </div>
+    <div v-else>
+      <button @click="follow">Follow</button>
+    </div>
+  </div>
+</template>
 
-<script></script>
+<script>
+  export default {
+    computed: {
+      following() {
+        return (
+          this.$store.state.following.indexOf(this.$route.params.key) !== -1
+        )
+      }
+    },
+    methods: {
+      follow(e) {
+        e.preventDefault()
+        this.$store.commit('follow', this.$route.params.key)
+      },
+      unfollow(e) {
+        e.preventDefault()
+        this.$store.commit('unfollow', this.$route.params.key)
+      }
+    }
+  }
+</script>
 
 <style></style>

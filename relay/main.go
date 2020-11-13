@@ -38,7 +38,7 @@ func main() {
 	}
 
 	router.Path("/query_users").Methods("GET").HandlerFunc(queryUsers)
-	router.Path("/fetch_user_updates").Methods("GET").HandlerFunc(fetchUserUpdates)
+	router.Path("/listen_updates").Methods("GET").HandlerFunc(listenUpdates)
 	router.Path("/save_update").Methods("POST").HandlerFunc(saveUpdate)
 
 	srv := &http.Server{

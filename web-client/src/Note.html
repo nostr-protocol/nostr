@@ -1,5 +1,19 @@
-<template></template>
+<template>
+  <article>
+    <div>{{ pubkey }}</div>
+    <div>{{ content }}</div>
+    <div>{{ created_at}}</div>
+  </article>
+</template>
 
-<script></script>
+<script>
+  export default {
+    props: ['id', 'content', 'pubkey', 'created_at', 'signature', 'reference']
+  }
+</script>
 
-<style></style>
+<style>
+  article {
+    margin: 10px 0;
+  }
+</style>

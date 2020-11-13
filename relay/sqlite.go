@@ -19,9 +19,9 @@ CREATE TABLE event (
   pubkey text NOT NULL,
   created_at integer NOT NULL,
   kind integer NOT NULL,
-  reference text NOT NULL,
+  ref text NOT NULL,
   content text NOT NULL,
-  signature text NOT NULL
+  sig text NOT NULL
 );
 
 CREATE UNIQUE INDEX ididx ON event (id);

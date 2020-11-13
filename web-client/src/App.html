@@ -1,8 +1,14 @@
 <template>
   <div class="nav">
-    <router-link to="/setup">Setup</router-link>
-    <span class="pubkey">{{ $store.getters.pubKeyHex }}</span>
     <router-link to="/">Home</router-link>
+    <span class="pubkey" :title="$store.getters.pubKeyHex"
+      >{{ $store.getters.pubKeyHex }}</span
+    >
+    <form @submit="submitSearch">
+      <input v-model="search" />
+      <button style="display: none">Search</button>
+    </form>
+    <router-link to="/setup">Setup</router-link>
   </div>
   <div>
     <router-view />
@@ -10,13 +16,24 @@
 </template>
 
 <script>
-  export default {}
+  export default {
+    data() {
+      return {search: ''}
+    },
+    methods: {
+      submitSearch(e) {
+        e.preventDefault()
+        this.$router.push('/' + this.search)
+      }
+    }
+  }
 </script>
 
 <style>
   .nav {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
   }
   .nav > * {
     margin: 0 10px;
@@ -26,8 +43,5 @@
     width: 160px;
     text-overflow: ellipsis;
     overflow: hidden;
-  }
-  .pubkey:hover {
-    width: auto;
   }
 </style>

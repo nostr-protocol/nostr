@@ -1,24 +1,27 @@
 <template>
+  <h1>Home</h1>
+  <div v-if="$store.state.following.length">
+    <h2>Following</h2>
+    <ul>
+      <li v-for="key in $store.state.following">
+        <a :href="'#/' + key">{{ key }}</a>
+      </li>
+    </ul>
+  </div>
   <form @submit="publishNote">
     <legend>Publishing to {{ writeServersList }}</legend>
     <label
       >Write anything:
-      <textarea :disabled="publishing" v-model="text"></textarea>
+      <input :disabled="publishing" v-model="text" />
     </label>
     <button :disabled="publishing">Publish</button>
   </form>
   <p>Data providers: {{ readServersList }}</p>
-  <div v-if="$store.state.loadingNotes">
-    <p>Loading notes...</p>
-  </div>
-  <div v-else-if="$store.state.following.length === 0">
-    <p>You're not following anyone.</p>
-  </div>
-  <div v-else-if="$store.state.notes.length === 0">
-    <p>Didn't find any data.</p>
+  <div v-if="$store.state.notes.size === 0">
+    <p>Didn't find any notes to show.</p>
   </div>
   <div v-else>
-    <div v-for="note in $store.state.notes">
+    <div v-for="note in $store.state.notes.values()">
       <Note v-bind="note" :key="note.id" />
     </div>
   </div>
