@@ -1,5 +1,34 @@
+import shajs from 'sha.js'
+
+import {ec} from './globals'
+
 export function verifySignature(evt) {
   return true // TODO
+}
+
+export function publishEvent(evt, key, hosts) {
+  let hash = shajs('sha256').update(serializeEvent(evt)).digest()
+  evt.id = hash.toString('hex')
+
+  evt.sig = ec
+    .keyFromPrivate(key, 'hex')
+    .sign(hash, {canonical: true})
+    .toDER('hex')
+
+  for (let i = 0; i < hosts.length; i++) {
+    let host = hosts[i]
+    window
+      .fetch(host + '/save_update', {
+        method: 'POST',
+        headers: {'content-type': 'application/json'},
+        body: JSON.stringify(evt)
+      })
+      .then(r => {
+        if (!r.ok) console.log(`failed to publish ${evt} to ${host}`)
+      })
+  }
+
+  return evt
 }
 
 export function serializeEvent(evt) {

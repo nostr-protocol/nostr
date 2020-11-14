@@ -27,6 +27,9 @@ type Event struct {
 	Ref     string `db:"ref" json:"ref"` // the id of another event, optional
 	Content string `db:"content" json:"content"`
 	Sig     string `db:"sig" json:"sig"`
+
+	// extra
+	Rel int `db:"rel" json:"rel,omitempty"`
 }
 
 // Serialize outputs a byte array that can be hashed/signed to identify/authenticate

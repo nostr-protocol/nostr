@@ -4,9 +4,11 @@
     "dexie": "^3.0.2",
     "elliptic": "^6.5.3",
     "insort": "^0.4.0",
+    "pretty-date": "^0.2.0",
+    "quick-lru": "^5.1.1",
     "sha.js": "^2.4.11",
     "vue": "^3.0.2",
-    "vue-router": "^4.0.0-rc.2",
+    "vue-router": "^4.0.0-rc.3",
     "vuex": "^4.0.0-rc.1"
   },
   "devDependencies": {
@@ -15,7 +17,7 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^10.0.0",
     "@vue/compiler-sfc": "^3.0.2",
-    "rollup": "^2.33.1",
+    "rollup": "^2.33.2",
     "rollup-plugin-css-only": "^2.1.0",
     "rollup-plugin-inject-process-env": "^1.3.1",
     "rollup-plugin-terser": "^7.0.2",

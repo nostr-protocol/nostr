@@ -6,6 +6,7 @@ import Home from './Home.html'
 import Setup from './Setup.html'
 import Profile from './Profile.html'
 import Note from './Note.html'
+import List from './List.html'
 
 import store from './store'
 
@@ -28,4 +29,5 @@ app.component('Home', Home)
 app.component('Setup', Setup)
 app.component('Profile', Profile)
 app.component('Note', Note)
+app.component('List', List)
 app.mount('#app')

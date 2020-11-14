@@ -25,7 +25,8 @@ CREATE TABLE event (
 );
 
 CREATE UNIQUE INDEX ididx ON event (id);
-CREATE INDEX pubkeytime ON event (pubkey, created_at);
+CREATE INDEX pubkeytimeidx ON event (pubkey, created_at);
+CREATE INDEX idxref ON event (ref);
     `)
 	log.Print(err)
 	return db, nil

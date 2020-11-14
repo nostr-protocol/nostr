@@ -40,6 +40,8 @@ func main() {
 	router.Path("/query_users").Methods("GET").HandlerFunc(queryUsers)
 	router.Path("/listen_updates").Methods("GET").HandlerFunc(listenUpdates)
 	router.Path("/save_update").Methods("POST").HandlerFunc(saveUpdate)
+	router.Path("/request_user").Methods("POST").HandlerFunc(requestUser)
+	router.Path("/request_note").Methods("POST").HandlerFunc(requestNote)
 
 	srv := &http.Server{
 		Handler:      cors.Default().Handler(router),

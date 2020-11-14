@@ -2,11 +2,17 @@
   <div>
     <h1>{{ $route.params.key }}</h1>
     <div v-if="following">
-      <button @click="unfollow">Unfollow</button>
+      <button
+        @click="unfollow"
+        :disabled="$route.params.key === $store.getters.pubKeyHex"
+      >
+        Unfollow
+      </button>
     </div>
     <div v-else>
       <button @click="follow">Follow</button>
     </div>
+    <List :notes="notes" />
   </div>
 </template>
 
@@ -17,6 +23,17 @@
         return (
           this.$store.state.following.indexOf(this.$route.params.key) !== -1
         )
+      },
+      notes() {
+        var notes = []
+        for (let k of this.$store.state.browsing.keys()) {
+          if (k === 'from:' + this.$route.params.key) {
+            let note = this.$store.state.browsing.get(k)
+            notes.push(note)
+          }
+        }
+        notes.sort((a, b) => b.created_at - a.created_at)
+        return notes
       }
     },
     methods: {
@@ -28,6 +45,9 @@
         e.preventDefault()
         this.$store.commit('unfollow', this.$route.params.key)
       }
+    },
+    mounted() {
+      this.$store.dispatch('browseProfile', this.$route.params.key)
     }
   }
 </script>

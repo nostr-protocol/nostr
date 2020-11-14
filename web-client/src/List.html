@@ -1,0 +1,19 @@
+<template>
+  <section class="notes">
+    <div v-for="note in notes">
+      <Note :note="note" :key="note.id" />
+    </div>
+  </section>
+</template>
+
+<script>
+  export default {
+    props: ['notes']
+  }
+</script>
+
+<style scoped>
+  .notes {
+    background: 'whitesmoke';
+  }
+</style>
