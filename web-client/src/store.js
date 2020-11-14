@@ -30,7 +30,7 @@ export default createStore({
       },
       key: ec.genKeyPair().getPrivate('hex'),
       following: [],
-      notes: new SortedMap([], (a, b) => a.created_at - b.created_at)
+      notes: new SortedMap([], (a, b) => b[1] - a[1])
     }
   },
   getters: {
@@ -71,7 +71,7 @@ export default createStore({
         case 0: // setMetadata
           break
         case 1: // textNote
-          state.notes.set(evt.id, evt)
+          state.notes.set([evt.id, evt.created_at], evt)
           break
         case 2: // recommendServer
           break
@@ -149,8 +149,8 @@ async function init(store) {
       .toArray()
       .then(notes => {
         return new SortedMap(
-          notes.map(n => [n.id, n]),
-          (a, b) => a.created_at - b.created_at
+          notes.map(n => [[n.id, n.created_at], n]),
+          (a, b) => b[1] - a[1]
         )
       })
   ])
