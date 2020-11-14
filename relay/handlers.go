@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"gopkg.in/antage/eventsource.v1"
@@ -38,13 +39,38 @@ func queryUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(found)
 }
 
+var sessions = make(map[string]*eventsource.EventSource)
+var slock = sync.Mutex{}
+
 func listenUpdates(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
+	var es eventsource.EventSource
+
+	session := r.URL.Query().Get("session")
+	if session != "" {
+		// if a session id was given, try to recover/save the es object
+		slock.Lock()
+		preves, ok := sessions[session]
+		slock.Unlock()
+		if ok {
+			// end it here, just serve again the existing object
+			es = *preves
+			es.ServeHTTP(w, r)
+			return
+		} else {
+			// proceed, but save the es object at the end
+			defer func() {
+				slock.Lock()
+				defer slock.Unlock()
+				sessions[session] = &es
+			}()
+		}
+	}
 
 	// will return past items then track changes from these keys:
 	keys, _ := r.URL.Query()["key"]
 
-	es := eventsource.New(
+	es = eventsource.New(
 		&eventsource.Settings{
 			Timeout:        time.Second * 5,
 			CloseOnTimeout: true,
