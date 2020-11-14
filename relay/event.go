@@ -19,7 +19,7 @@ const (
 type Event struct {
 	ID string `db:"id" json:"id"` // it's the hash of the serialized event
 
-	Pubkey    string `db:"pubkey" json:"pubkey"`
+	PubKey    string `db:"pubkey" json:"pubkey"`
 	CreatedAt uint32 `db:"created_at" json:"created_at"`
 
 	Kind uint8 `db:"kind" json:"kind"`
@@ -38,7 +38,7 @@ func (evt *Event) Serialize() ([]byte, error) {
 	b.Write([]byte{0})
 
 	// pubkey
-	pubkeyb, err := hex.DecodeString(evt.Pubkey)
+	pubkeyb, err := hex.DecodeString(evt.PubKey)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (evt *Event) Serialize() ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error parsing pubkey: %w", err)
 	}
-	if evt.Pubkey != hex.EncodeToString(pubkey.SerializeCompressed()) {
+	if evt.PubKey != hex.EncodeToString(pubkey.SerializeCompressed()) {
 		return nil, fmt.Errorf("pubkey is not serialized in compressed format")
 	}
 	if _, err = b.Write(pubkeyb); err != nil {
@@ -94,7 +94,7 @@ func (evt *Event) Serialize() ([]byte, error) {
 // returns an error if the signature itself is invalid.
 func (evt Event) CheckSignature() (bool, error) {
 	// validity of these is checked by Serialize()
-	pubkeyb, _ := hex.DecodeString(evt.Pubkey)
+	pubkeyb, _ := hex.DecodeString(evt.PubKey)
 	pubkey, _ := btcec.ParsePubKey(pubkeyb, btcec.S256())
 
 	bsig, err := hex.DecodeString(evt.Sig)

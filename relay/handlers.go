@@ -45,7 +45,12 @@ func listenUpdates(w http.ResponseWriter, r *http.Request) {
 	keys, _ := r.URL.Query()["key"]
 
 	es := eventsource.New(
-		eventsource.DefaultSettings(),
+		&eventsource.Settings{
+			Timeout:        time.Second * 5,
+			CloseOnTimeout: true,
+			IdleTimeout:    time.Minute * 5,
+			Gzip:           true,
+		},
 		func(r *http.Request) [][]byte {
 			return [][]byte{
 				[]byte("X-Accel-Buffering: no"),
@@ -65,6 +70,11 @@ func listenUpdates(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		for {
 			time.Sleep(25 * time.Second)
+			if es.ConsumersCount() == 0 {
+				removeFromWatchers(&es)
+				es.Close()
+				return
+			}
 			es.SendEventMessage("", "keepalive", "")
 		}
 	}()
@@ -101,7 +111,7 @@ func listenUpdates(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// listen to new events
-
+	watchPubKeys(keys, &es)
 }
 
 func saveUpdate(w http.ResponseWriter, r *http.Request) {
@@ -154,12 +164,14 @@ func saveUpdate(w http.ResponseWriter, r *http.Request) {
 	_, err = db.Exec(`
         INSERT INTO event (id, pubkey, created_at, kind, ref, content, sig)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
-    `, evt.ID, evt.Pubkey, evt.CreatedAt, evt.Kind, evt.Ref, evt.Content, evt.Sig)
+    `, evt.ID, evt.PubKey, evt.CreatedAt, evt.Kind, evt.Ref, evt.Content, evt.Sig)
 	if err != nil {
-		log.Warn().Err(err).Str("pubkey", evt.Pubkey).Msg("failed to save")
+		log.Warn().Err(err).Str("pubkey", evt.PubKey).Msg("failed to save")
 		w.WriteHeader(500)
 		return
 	}
 
 	w.WriteHeader(201)
+
+	notifyPubKeyEvent(evt.PubKey, &evt)
 }
