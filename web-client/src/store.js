@@ -37,7 +37,6 @@ export default createStore({
     }
   },
   getters: {
-    privKeyHex: state => state.key,
     pubKeyHex: state =>
       ec.keyFromPrivate(state.key, 'hex').getPublic(true, 'hex'),
     writeServers: state =>
@@ -59,6 +58,17 @@ export default createStore({
     },
     gotEventSource(state) {
       state.haveEventSource.resolve()
+    },
+    addRelay(state, relay) {
+      db.relays.put(relay)
+      state.relays.push(relay)
+    },
+    updateRelay(state, {key, host, policy}) {
+      let relay = {host, policy}
+      db.relays.update(key, relay)
+      let entry = state.relays.find(x => x.host === host)
+      entry.host = relay.host
+      entry.policy = relay.policy
     },
     follow(state, key) {
       state.following.push(key)
@@ -120,6 +130,7 @@ export default createStore({
               policy: '',
               recommender: evt.pubkey
             })
+            state.relays.push({host, policy: ''})
           } else {
             db.relays.put({
               host,
@@ -283,6 +294,7 @@ function listener(store) {
 
     es.onerror = e => {
       console.log(`${host}/listen_updates error: ${e.data}`)
+      es.close()
       ess.delete(host)
     }
 

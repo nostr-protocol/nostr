@@ -1,21 +1,105 @@
 <template>
-  <div><b>Secret Key:</b> {{ $store.getters.privkeyHex }}</div>
-  <div>
+  <section><b>Secret Key:</b> {{ $store.state.key }}</section>
+  <section>
     <b>Relays:</b>
-    {{ JSON.stringify($store.state.relays) }}
-  </div>
-  <div>
-    <b>Following:</b>
-    {{ JSON.stringify($store.state.following) }}
-  </div>
+    <div v-for="(relay, i) in (relays || []).concat(null)">
+      <form v-if="editing === i" @submit="saveRelay">
+        <label>
+          URL:
+          <input v-model="host" />
+        </label>
+        <label>
+          Read:
+          <input v-model="policy_r" type="checkbox" />
+        </label>
+        <label>
+          Write:
+          <input v-model="policy_w" type="checkbox" />
+        </label>
+        <button @click="cancel">Cancel</button>
+        <button>Save</button>
+      </form>
+      <div v-else>
+        <span v-if="relay">
+          {{ relay.host }}: {{ relay.policy }}
+          <button @click="e => editRelay(e, i)">Edit</button>
+        </span>
+        <span v-else>
+          <button @click="e => editRelay(e, i)">Add</button>
+        </span>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
   export default {
     data() {
-      return {}
+      return {
+        editing: null,
+        host: '',
+        policy_r: false,
+        policy_w: false
+      }
+    },
+    computed: {
+      relays() {
+        return Array.from(this.$store.state.relays).sort((a, b) => {
+          let pa = a.policy
+          let pb = b.policy
+          if (pa === pb) return 0
+          if (pa === 'rw') return 1
+          if (pb === 'rw') return -1
+          if (pa === 'w') return 1
+          if (pb === 'w') return -1
+          return 0
+        })
+      }
+    },
+    methods: {
+      cancel(e) {
+        e.preventDefault()
+        e.stopPropagation()
+        this.editing = null
+      },
+      editRelay(e, i) {
+        e.preventDefault()
+        if (i === this.relays.length) {
+          this.host = ''
+          this.policy_r = true
+          this.policy_w = true
+        } else {
+          this.host = this.relays[i].host
+          this.policy_r = this.relays[i].policy.indexOf('r') !== -1
+          this.policy_w = this.relays[i].policy.indexOf('w') !== -1
+        }
+        this.editing = i
+      },
+      saveRelay(e) {
+        e.preventDefault()
+
+        let relay = {
+          host: this.host,
+          policy: (this.policy_r ? 'r' : '') + (this.policy_w ? 'w' : '')
+        }
+
+        if (this.editing === this.relays.length) {
+          this.$store.commit('addRelay', relay)
+        } else if (this.editing >= 0) {
+          this.$store.commit('updateRelay', {
+            ...relay,
+            key: this.relays[this.editing].host
+          })
+        }
+
+        this.editing = null
+      }
     }
   }
 </script>
 
-<style></style>
+<style scoped>
+  section {
+    margin: 10px;
+  }
+</style>
