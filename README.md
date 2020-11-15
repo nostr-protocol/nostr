@@ -1,4 +1,4 @@
-# vSTONKS - Very Simple and Truly Open Social Network Killer
+# nostr - Notes and Other Stuff Transmitted by Relays
 
 This is a prototype of the most simple open protocol that is able to create an open censorship-resistant global "social" network once and for all.
 

@@ -13,7 +13,7 @@ export default createStore({
   state() {
     let relays = [
       {
-        host: 'https://relay-profiles.bigsun.xyz',
+        host: 'https://nostr-relay.bigsun.xyz',
         policy: 'rw'
       }
     ]
