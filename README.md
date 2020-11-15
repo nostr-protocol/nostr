@@ -1,4 +1,4 @@
-# Profiles (provisory name)
+# vSTONKS - Very Simple and Truly Open Social Network Killer
 
 This is a prototype of the most simple open protocol that is able to create an open censorship-resistant global "social" network once and for all.
 
