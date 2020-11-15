@@ -52,7 +52,10 @@ export default createStore({
     setInit(state, {relays, key, following, home, metadata}) {
       state.relays = relays
       state.key = key
-      state.following = following
+      state.following = following.concat(
+        // always be following thyself
+        ec.keyFromPrivate(state.key, 'hex').getPublic(true, 'hex')
+      )
       state.home = home
       state.metadata = metadata
     },
@@ -231,14 +234,7 @@ async function init(store) {
       }
       return rls
     }),
-    db.following.toArray().then(r =>
-      r
-        .map(({pubkey}) => pubkey)
-        .concat(
-          // always be following thyself
-          store.getters.pubKeyHex
-        )
-    ),
+    db.following.toArray().then(r => r.map(({pubkey}) => pubkey)),
     db.mynotes
       .orderBy('created_at')
       .reverse()
