@@ -56,7 +56,9 @@ This is a prototype of the most simple open protocol that is able to create an o
 - [ ] It has been tested in the wild
 - [ ] The protocol has a good name
 - [ ] Using public keys as the primary identification method works because we have ways to alias them to readable names
-- [ ] The server recommendation thing works as good as envisaged
+- [-] The server recommendation thing works as good as envisaged
+- [ ] A decent way to upload old notes to a new server that doesn't trigger date mismatch error
+- [ ] A way for notes to prove themselves they existed at a certain date to clients (OpenTimestamps?)
 
 ### Expected differences from the Twitter experience
 
