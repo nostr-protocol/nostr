@@ -67,6 +67,10 @@ This is a prototype of the most simple open protocol that is able to create an o
 - Data will always be only "eventually consistent" (or sometimes not consistent at all)
 - ...
 
+## How does it work in practice
+
+See the [NIPs](nips) and specially [NIP-01](nips/01.md) for a reasonably-detailed explanation of the protocol spec (hint: it is very small and simple).
+
 ## License
 
 Public domain.
