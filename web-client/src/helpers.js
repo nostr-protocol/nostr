@@ -17,6 +17,7 @@ export function publishEvent(evt, key, hosts) {
 
   for (let i = 0; i < hosts.length; i++) {
     let host = hosts[i]
+    if (host.length && host[host.length - 1] === '/') host = host.slice(0, -1)
     window
       .fetch(host + '/save_update', {
         method: 'POST',

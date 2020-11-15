@@ -9,7 +9,7 @@ export default createStore({
   plugins: (process.env.NODE_ENV !== 'production'
     ? [createLogger()]
     : []
-  ).concat([init, listener]),
+  ).concat([init, listener, relayLoader]),
   state() {
     let relays = [
       {
@@ -61,14 +61,16 @@ export default createStore({
     },
     addRelay(state, relay) {
       db.relays.put(relay)
-      state.relays.push(relay)
     },
     updateRelay(state, {key, host, policy}) {
       let relay = {host, policy}
       db.relays.update(key, relay)
-      let entry = state.relays.find(x => x.host === host)
-      entry.host = relay.host
-      entry.policy = relay.policy
+    },
+    deleteRelay(state, host) {
+      db.relays.delete(host)
+    },
+    loadedRelays(state, relays) {
+      state.relays = relays
     },
     follow(state, key) {
       state.following.push(key)
@@ -125,19 +127,19 @@ export default createStore({
         case 2: // recommendServer
           let host = evt.content
           if (context === 'requested') {
+            // someone we're just browsing
             db.relays.put({
               host,
               policy: '',
               recommender: evt.pubkey
             })
-            state.relays.push({host, policy: ''})
           } else {
+            // someone we're following
             db.relays.put({
               host,
               policy: 'r',
               recommender: evt.pubkey
             })
-            state.relays.push({host, policy: 'r'})
           }
           break
       }
@@ -194,6 +196,18 @@ export default createStore({
 
       db.mynotes.put(evt)
       store.commit('receivedEvent', {event: evt, context: 'happening'})
+    },
+    recommendRelay(store, host) {
+      publishEvent(
+        {
+          pubkey: store.getters.pubKeyHex,
+          created_at: Math.round(new Date().getTime() / 1000),
+          kind: 2,
+          content: host
+        },
+        store.state.key,
+        store.getters.writeServers
+      )
     }
   }
 })
@@ -254,6 +268,19 @@ async function init(store) {
   })
 }
 
+function relayLoader(store) {
+  db.relays.hook('creating', loadRelays)
+  db.relays.hook('updating', loadRelays)
+  db.relays.hook('deleting', loadRelays)
+
+  function loadRelays() {
+    setTimeout(async () => {
+      let relays = await db.relays.toArray()
+      store.commit('loadedRelays', relays)
+    }, 1)
+  }
+}
+
 function listener(store) {
   var ess = new Map()
 
@@ -261,10 +288,17 @@ function listener(store) {
     listenToRelay(host)
   })
 
+  db.relays.hook('updating', (mod, _, obj) => {
+    if (obj.policy.indexOf('r') !== -1) {
+      stopListeningToRelay(obj.host)
+    }
+    if (!mod.policy || mod.policy.indexOf('r') !== -1) {
+      listenToRelay(mod.host || obj.host)
+    }
+  })
+
   db.relays.hook('deleting', host => {
-    let es = ess.get(host)
-    es.close()
-    ess.delete(host)
+    stopListeningToRelay(host)
   })
 
   db.following.hook('creating', () => {
@@ -283,17 +317,25 @@ function listener(store) {
     store.getters.readServers.forEach(listenToRelay)
   }
 
+  function stopListeningToRelay(host) {
+    let es = ess.get(host)
+    if (!es) return
+    es.close()
+    ess.delete(host)
+  }
+
   function listenToRelay(host) {
     if (store.state.following.length === 0) return
 
+    if (host.length && host[host.length - 1] === '/') host = host.slice(0, -1)
     let qs = store.state.following.map(key => `key=${key}`).join('&')
     let es = new EventSource(
       host + '/listen_updates?' + qs + '&session=' + store.state.session
     )
     ess.set(host, es)
 
-    es.onerror = e => {
-      console.log(`${host}/listen_updates error: ${e.data}`)
+    es.onerror = err => {
+      console.log(`${host}/listen_updates error: ${err}`)
       es.close()
       ess.delete(host)
     }

@@ -16,13 +16,15 @@
           Write:
           <input v-model="policy_w" type="checkbox" />
         </label>
-        <button @click="cancel">Cancel</button>
+        <button @click="cancelRelay">Cancel</button>
         <button>Save</button>
       </form>
       <div v-else>
         <span v-if="relay">
           {{ relay.host }}: {{ relay.policy }}
           <button @click="e => editRelay(e, i)">Edit</button>
+          <button @click="e => recommendRelay(e, i)">Publish</button>
+          <button @click="e => deleteRelay(e, i)">Delete</button>
         </span>
         <span v-else>
           <button @click="e => editRelay(e, i)">Add</button>
@@ -57,7 +59,7 @@
       }
     },
     methods: {
-      cancel(e) {
+      cancelRelay(e) {
         e.preventDefault()
         e.stopPropagation()
         this.editing = null
@@ -93,6 +95,14 @@
         }
 
         this.editing = null
+      },
+      recommendRelay(e, i) {
+        e.preventDefault()
+        this.$store.dispatch('recommendRelay', this.relays[i].host)
+      },
+      deleteRelay(e, i) {
+        e.preventDefault()
+        this.$store.commit('deleteRelay', this.relays[i].host)
       }
     }
   }
