@@ -9,6 +9,5 @@ db.version(1).stores({
   relays: 'host',
   following: 'pubkey',
   mynotes: 'id, kind, created_at',
-  cachedmetadata: 'pubkey',
-  cachednotes: 'id, pubkey, created_at'
+  cachedmetadata: 'pubkey'
 })

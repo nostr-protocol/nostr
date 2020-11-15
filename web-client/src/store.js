@@ -31,7 +31,7 @@ export default createStore({
       relays,
       key: ec.genKeyPair().getPrivate('hex'),
       following: [],
-      home: new SortedMap([], (a, b) => b[1] - a[1]),
+      home: new SortedMap(),
       metadata: new LRU({maxSize: 100}),
       browsing: new LRU({maxSize: 300})
     }
@@ -119,7 +119,7 @@ export default createStore({
               state.browsing.set('rel:' + evt.ref, evt)
             }
           } else {
-            state.home.set([evt.id, evt.created_at], evt)
+            state.home.set(evt.id + ':' + evt.created_at, evt)
           }
           break
         case 2: // recommendServer
@@ -232,8 +232,8 @@ async function init(store) {
       .toArray()
       .then(notes => {
         return new SortedMap(
-          notes.map(n => [[n.id, n.created_at], n]),
-          (a, b) => b[1] - a[1]
+          notes.map(n => [n.id + ':' + n.created_at, n]),
+          (a, b) => b.split(':')[1] - a.split(':')[1]
         )
       }),
     db.cachedmetadata.toArray().then(metas => {
