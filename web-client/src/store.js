@@ -64,8 +64,9 @@ export default createStore({
       state.home = home
       state.metadata = metadata
     },
-    gotEventSource(state) {
+    gotEventSource(state, session) {
       state.haveEventSource.resolve()
+      state.session = session
     },
     addRelay(state, relay) {
       db.relays.put(relay)
@@ -338,10 +339,12 @@ function listener(store) {
   function listenToRelay(host) {
     if (store.state.following.length === 0) return
 
+    let session = new Date().getTime() + '' + Math.round(Math.random() * 100000)
+
     if (host.length && host[host.length - 1] === '/') host = host.slice(0, -1)
     let qs = store.state.following.map(key => `key=${key}`).join('&')
     let es = new EventSource(
-      host + '/listen_updates?' + qs + '&session=' + store.state.session
+      host + '/listen_updates?' + qs + '&session=' + session
     )
     ess.set(host, es)
 
@@ -351,7 +354,7 @@ function listener(store) {
       ess.delete(host)
     }
 
-    store.commit('gotEventSource')
+    store.commit('gotEventSource', session)
 
     es.addEventListener('notice', e => {
       console.log(e.data)
