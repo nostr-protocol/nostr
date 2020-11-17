@@ -1,9 +1,9 @@
-module github.com/fiatjaf/profiles
+module github.com/fiatjaf/nostr-relay
 
 go 1.15
 
 require (
-	github.com/btcsuite/btcd v0.21.0-beta
+	github.com/fiatjaf/schnorr v0.2.1-hack
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/jmoiron/sqlx v1.2.0

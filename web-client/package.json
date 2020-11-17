@@ -1,8 +1,9 @@
 {
   "dependencies": {
+    "assert": "^2.0.0",
+    "bip-schnorr": "github:fiatjaf/bip-schnorr",
     "buffer": "^6.0.2",
     "dexie": "^3.0.2",
-    "elliptic": "^6.5.3",
     "insort": "^0.4.0",
     "pretty-date": "^0.2.0",
     "quick-lru": "^5.1.1",

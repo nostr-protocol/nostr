@@ -2,8 +2,13 @@ import {createStore, createLogger} from 'vuex'
 import {SortedMap} from 'insort'
 import LRU from 'quick-lru'
 
-import {verifySignature, publishEvent} from './helpers'
-import {ec, db} from './globals'
+import {
+  pubkeyFromPrivate,
+  makeRandom32,
+  verifySignature,
+  publishEvent
+} from './helpers'
+import {db} from './globals'
 
 export default createStore({
   plugins: (process.env.NODE_ENV !== 'production'
@@ -29,7 +34,7 @@ export default createStore({
       haveEventSource,
       session: new Date().getTime() + '' + Math.round(Math.random() * 100000),
       relays,
-      key: ec.genKeyPair().getPrivate('hex'),
+      key: makeRandom32().toString('hex'),
       following: [],
       home: new SortedMap(),
       metadata: new LRU({maxSize: 100}),
@@ -37,8 +42,7 @@ export default createStore({
     }
   },
   getters: {
-    pubKeyHex: state =>
-      ec.keyFromPrivate(state.key, 'hex').getPublic(true, 'hex'),
+    pubKeyHex: state => pubkeyFromPrivate(state.key),
     writeServers: state =>
       state.relays
         .filter(({policy}) => policy.indexOf('w') !== -1)
@@ -54,7 +58,7 @@ export default createStore({
       state.key = key
       state.following = following.concat(
         // always be following thyself
-        ec.keyFromPrivate(state.key, 'hex').getPublic(true, 'hex')
+        pubkeyFromPrivate(state.key)
       )
       state.home = home
       state.metadata = metadata

@@ -1,19 +1,41 @@
 import shajs from 'sha.js'
+import BigInteger from 'bigi'
+import schnorr from 'bip-schnorr'
 
-import {ec} from './globals'
+import {db} from './globals'
+
+export function makeRandom32() {
+  var array = new Uint32Array(32)
+  window.crypto.getRandomValues(array)
+  return Buffer.from(array)
+}
+
+export function pubkeyFromPrivate(privateHex) {
+  return schnorr.convert
+    .pubKeyFromPrivate(new BigInteger(privateHex, 16))
+    .toString('hex')
+}
 
 export function verifySignature(evt) {
-  return true // TODO
+  try {
+    schnorr.verify(
+      Buffer.from(evt.pubkey, 'hex'),
+      Buffer.from(evt.id, 'hex'),
+      Buffer.from(evt.sig, 'hex')
+    )
+    return true
+  } catch (err) {
+    return false
+  }
 }
 
 export function publishEvent(evt, key, hosts) {
   let hash = shajs('sha256').update(serializeEvent(evt)).digest()
   evt.id = hash.toString('hex')
 
-  evt.sig = ec
-    .keyFromPrivate(key, 'hex')
-    .sign(hash, {canonical: true})
-    .toDER('hex')
+  evt.sig = schnorr
+    .sign(new BigInteger(key, 16), hash, makeRandom32())
+    .toString('hex')
 
   for (let i = 0; i < hosts.length; i++) {
     let host = hosts[i]

@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/btcsuite/btcd/btcec"
+	"github.com/fiatjaf/schnorr"
 )
 
 const (
@@ -45,12 +45,8 @@ func (evt *Event) Serialize() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	pubkey, err := btcec.ParsePubKey(pubkeyb, btcec.S256())
-	if err != nil {
-		return nil, fmt.Errorf("error parsing pubkey: %w", err)
-	}
-	if evt.PubKey != hex.EncodeToString(pubkey.SerializeCompressed()) {
-		return nil, fmt.Errorf("pubkey is not serialized in compressed format")
+	if len(pubkeyb) != 32 {
+		return nil, fmt.Errorf("pubkey must be 32 bytes, not %d", len(pubkeyb))
 	}
 	if _, err = b.Write(pubkeyb); err != nil {
 		return nil, err
@@ -96,19 +92,35 @@ func (evt *Event) Serialize() ([]byte, error) {
 // (which is a hash of the serialized event content).
 // returns an error if the signature itself is invalid.
 func (evt Event) CheckSignature() (bool, error) {
-	// validity of these is checked by Serialize()
-	pubkeyb, _ := hex.DecodeString(evt.PubKey)
-	pubkey, _ := btcec.ParsePubKey(pubkeyb, btcec.S256())
+	// validity of these is checked by Serialize(), which should be called first
+	pubkey, _ := hex.DecodeString(evt.PubKey)
 
-	bsig, err := hex.DecodeString(evt.Sig)
+	hash, _ := hex.DecodeString(evt.ID)
+	if len(hash) != 32 {
+		return false, fmt.Errorf("invalid event id/hash when checking signature (%s)",
+			evt.ID)
+	}
+
+	sig, err := hex.DecodeString(evt.Sig)
 	if err != nil {
 		return false, fmt.Errorf("signature is invalid hex: %w", err)
 	}
-	signature, err := btcec.ParseDERSignature(bsig, btcec.S256())
-	if err != nil {
-		return false, fmt.Errorf("failed to parse DER signature: %w", err)
+	if len(sig) != 64 {
+		return false, fmt.Errorf("signature must be 64 bytes, not %d", len(sig))
 	}
 
-	hash, _ := hex.DecodeString(evt.ID)
-	return signature.Verify(hash, pubkey), nil
+	var p [32]byte
+	for i, b := range pubkey {
+		p[i] = b
+	}
+	var h [32]byte
+	for i, b := range hash {
+		h[i] = b
+	}
+	var s [64]byte
+	for i, b := range sig {
+		s[i] = b
+	}
+
+	return schnorr.Verify(p, h, s)
 }

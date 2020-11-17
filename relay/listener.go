@@ -91,9 +91,9 @@ func listenUpdates(w http.ResponseWriter, r *http.Request) {
 	// past events
 	inkeys := make([]string, 0, len(keys))
 	for _, key := range keys {
-		// to prevent sql attack here we will check if these keys are valid 33-byte hex
+		// to prevent sql attack here we will check if these keys are valid 32-byte hex
 		parsed, err := hex.DecodeString(key)
-		if err != nil || len(parsed) != 33 {
+		if err != nil || len(parsed) != 32 {
 			continue
 		}
 		inkeys = append(inkeys, fmt.Sprintf("'%x'", parsed))
