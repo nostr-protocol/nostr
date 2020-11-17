@@ -1,4 +1,4 @@
-// +build postgres
+// +build full
 
 package main
 
