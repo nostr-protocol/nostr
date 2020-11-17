@@ -14,7 +14,7 @@ export default createStore({
   plugins: (process.env.NODE_ENV !== 'production'
     ? [createLogger()]
     : []
-  ).concat([init, listener, relayLoader]),
+  ).concat([init, listener, relayLoader, publishStatusLoader]),
   state() {
     let relays = [
       {
@@ -32,13 +32,14 @@ export default createStore({
 
     return {
       haveEventSource,
-      session: new Date().getTime() + '' + Math.round(Math.random() * 100000),
+      session: null,
       relays,
       key: makeRandom32().toString('hex'),
       following: [],
       home: new SortedMap(),
       metadata: new LRU({maxSize: 100}),
-      browsing: new LRU({maxSize: 300})
+      browsing: new LRU({maxSize: 300}),
+      publishStatus: {}
     }
   },
   getters: {
@@ -150,6 +151,10 @@ export default createStore({
           }
           break
       }
+    },
+    updatePublishStatus(state, {id, time, host, status}) {
+      if (!(id in state.publishStatus)) state.publishStatus[id] = {}
+      state.publishStatus[id][host] = {time, status}
     }
   },
   actions: {
@@ -279,6 +284,12 @@ function relayLoader(store) {
       store.commit('loadedRelays', relays)
     }, 1)
   }
+}
+
+function publishStatusLoader(store) {
+  db.publishlog.hook('creating', (_, {id, time, host, status}) => {
+    store.commit('updatePublishStatus', {id, time, host, status})
+  })
 }
 
 function listener(store) {

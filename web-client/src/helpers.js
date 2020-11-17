@@ -37,19 +37,27 @@ export function publishEvent(evt, key, hosts) {
     .sign(new BigInteger(key, 16), hash, makeRandom32())
     .toString('hex')
 
-  for (let i = 0; i < hosts.length; i++) {
-    let host = hosts[i]
+  hosts.forEach(async host => {
     if (host.length && host[host.length - 1] === '/') host = host.slice(0, -1)
-    window
-      .fetch(host + '/save_update', {
-        method: 'POST',
-        headers: {'content-type': 'application/json'},
-        body: JSON.stringify(evt)
-      })
-      .then(r => {
-        if (!r.ok) console.log(`failed to publish ${evt} to ${host}`)
-      })
-  }
+    let r = await window.fetch(host + '/save_update', {
+      method: 'POST',
+      headers: {'content-type': 'application/json'},
+      body: JSON.stringify(evt)
+    })
+
+    let publishLogEntry = {
+      id: evt.id,
+      time: evt.created_at,
+      host
+    }
+
+    if (!r.ok) {
+      console.log(`failed to publish ${evt} to ${host}`)
+      db.publishlog.put({...publishLogEntry, status: 'failed'})
+    } else {
+      db.publishlog.put({...publishLogEntry, status: 'succeeded'})
+    }
+  })
 
   return evt
 }

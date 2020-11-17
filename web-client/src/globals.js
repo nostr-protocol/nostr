@@ -7,5 +7,13 @@ db.version(1).stores({
   relays: 'host',
   following: 'pubkey',
   mynotes: 'id, kind, created_at',
-  cachedmetadata: 'pubkey'
+  cachedmetadata: 'pubkey',
+  publishlog: '++index, id'
 })
+
+if (!localStorage.getItem('deleted')) {
+  db.delete().then(() => {
+    localStorage.setItem('deleted', '1')
+    location.reload()
+  })
+}

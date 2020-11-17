@@ -1,5 +1,5 @@
 <template>
-  <article>
+  <article :class="{ours: ours}">
     <div class="pubkey">
       <a :href="'#/' + pubkey">{{ pubkey }}</a>
     </div>
@@ -10,6 +10,13 @@
           >{{ humanDate(created_at) }}</time
         ></a
       >
+      <span
+        v-if="ours"
+        class="publish-status"
+        v-for="({time, status}, host) in ($store.state.publishStatus[id] || {})"
+      >
+        {{ host }}: {{ status }} @ {{ time }}
+      </span>
     </em>
     <div v-if="reference" class="reference">
       <Note :note="reference" />
@@ -57,6 +64,9 @@
           }
         }
         return rel
+      },
+      ours() {
+        return this.pubkey === this.$store.getters.pubKeyHex
       }
     },
     methods: {
@@ -79,11 +89,19 @@
   article {
     margin: 10px 0;
   }
+  article.ours {
+    background-color: orange;
+  }
   p {
     margin: 0;
     padding-left: 20px;
   }
   .reference {
-    background-color: 'yellow';
+    background-color: lightblue;
+  }
+  .publish-status {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 0.5em;
   }
 </style>
