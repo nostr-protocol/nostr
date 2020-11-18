@@ -36,7 +36,8 @@ export default createStore({
       home: new SortedMap(),
       metadata: new LRU({maxSize: 100}),
       browsing: new LRU({maxSize: 300}),
-      publishStatus: {}
+      publishStatus: {},
+      petnames: {}
     }
   },
   getters: {
@@ -91,6 +92,13 @@ async function init(store) {
         metadata[pubkey] = meta
       })
       return metadata
+    }),
+    db.contactlist.toArray().then(contacts => {
+      var petnames = {}
+      contacts.forEach(({pubkey, name}) => {
+        petnames[pubkey] = name
+      })
+      return petnames
     })
   ])
 
@@ -99,7 +107,8 @@ async function init(store) {
     relays: data[1],
     following: data[2],
     home: data[3],
-    metadata: data[4]
+    metadata: data[4],
+    petnames: data[5]
   })
 }
 

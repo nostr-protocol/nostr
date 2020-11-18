@@ -8,12 +8,13 @@ db.version(1).stores({
   following: 'pubkey',
   mynotes: 'id, kind, created_at',
   cachedmetadata: 'pubkey',
-  publishlog: '++index, id'
+  publishlog: '++index, id',
+  contactlist: 'pubkey'
 })
 
-if (!localStorage.getItem('deleted')) {
+if (localStorage.getItem('deleted') < '2') {
   db.delete().then(() => {
-    localStorage.setItem('deleted', '1')
+    localStorage.setItem('deleted', '2')
     location.reload()
   })
 }

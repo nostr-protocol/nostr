@@ -12,6 +12,7 @@ export default {
 
     switch (event.kind) {
       case 0: // setMetadata
+        store.commit('receivedSetMetadata', {event, context})
         break
       case 1: // textNote
         store.commit('receivedTextNote', {event, context})
@@ -84,7 +85,7 @@ export default {
     }
   },
   async publishMetadata(store, meta) {
-    let evt = await publishEvent(
+    let event = await publishEvent(
       {
         pubkey: store.getters.pubKeyHex,
         created_at: Math.round(new Date().getTime() / 1000),
@@ -95,7 +96,7 @@ export default {
       store.getters.writeServers
     )
 
-    db.cachedmetadata.put({pubkey: evt.pubkey, time: evt.created_at, meta})
+    store.commit('receivedSetMetadata', {event, context: 'happening'})
   },
   async publishNote(store, text) {
     let event = await publishEvent(

@@ -1,16 +1,57 @@
 <template>
   <div>
-    <h1>{{ $route.params.key }}</h1>
-    <div v-if="following">
-      <button
-        @click="unfollow"
-        :disabled="$route.params.key === $store.getters.pubKeyHex"
-      >
-        Unfollow
-      </button>
+    <code>{{ $route.params.key }}</code>
+    <div>
+      <label v-if="editingMetadata">
+        Picture URL:
+        <input v-model="editingMetadata.picture" />
+      </label>
+      <img
+        v-else-if="(metadata.picture || '').length"
+        :src="metadata.picture"
+      />
     </div>
-    <div v-else>
-      <button @click="follow">Follow</button>
+    <div>
+      <form v-if="editingName !== null" @submit="savePetName">
+        <label>
+          Petname:
+          <input v-model="editingName" />
+          (Will be made public)
+        </label>
+        <button>Save</button>
+      </form>
+      <div v-else-if="editingMetadata">
+        <label v-if="editingMetadata">
+          Name:
+          <input v-model="editingMetadata.name" />
+        </label>
+      </div>
+      <div v-else>
+        <h1>{{ name }}</h1>
+        <button v-if="!myself" @click="editingName = name">Rename</button>
+      </div>
+    </div>
+    <h2 v-if="name !== metadata.name">{{ metadata.name }}</h2>
+    <div v-if="!myself">
+      <button v-if="following" @click="unfollow">Unfollow</button>
+      <button v-else @click="follow">Follow</button>
+    </div>
+    <article>
+      <span v-if="!editingMetadata">{{ metadata.about }}</span>
+      <label v-else>
+        About: <textarea v-model="editingMetadata.about"></textarea>
+      </label>
+    </article>
+    <div>
+      <button
+        v-if="myself && !editingMetadata"
+        @click="editingMetadata = {...metadata}"
+      >
+        Edit
+      </button>
+      <button v-else-if="editingMetadata" @click="saveEditedMetadata">
+        Save
+      </button>
     </div>
     <List :notes="notes" />
   </div>
@@ -18,7 +59,25 @@
 
 <script>
   export default {
+    data() {
+      return {
+        editingMetadata: null,
+        editingName: null
+      }
+    },
     computed: {
+      myself() {
+        return this.$route.params.key === this.$store.getters.pubKeyHex
+      },
+      metadata() {
+        return this.$store.state.metadata.get(this.$route.params.key) || {}
+      },
+      petname() {
+        return this.$store.state.petnames[this.$route.params.key]
+      },
+      name() {
+        return this.petname || this.metadata.name
+      },
       following() {
         return (
           this.$store.state.following.indexOf(this.$route.params.key) !== -1
@@ -44,6 +103,19 @@
       unfollow(e) {
         e.preventDefault()
         this.$store.commit('unfollow', this.$route.params.key)
+      },
+      saveEditedMetadata(e) {
+        e.preventDefault()
+        this.$store.dispatch('publishMetadata', this.editingMetadata)
+        this.editingMetadata = null
+      },
+      savePetName(e) {
+        e.preventDefault()
+        this.$store.commit('savePetName', {
+          pubkey: this.$route.params.key,
+          name: this.editingName
+        })
+        this.editingName = null
       }
     },
     mounted() {
@@ -52,4 +124,10 @@
   }
 </script>
 
-<style></style>
+<style module>
+  a {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+  }
+</style>

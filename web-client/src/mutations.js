@@ -4,7 +4,7 @@ import {pubkeyFromPrivate} from './helpers'
 import {db} from './globals'
 
 export default {
-  setInit(state, {relays, key, following, home, metadata}) {
+  setInit(state, {relays, key, following, home, metadata, petnames}) {
     state.relays = relays
     state.key = key
     state.following = following.concat(
@@ -12,7 +12,10 @@ export default {
       pubkeyFromPrivate(state.key)
     )
     state.home = home
-    state.metadata = metadata
+    for (let key in metadata) {
+      state.metadata.set(key, metadata[key])
+    }
+    state.petnames = petnames
   },
   gotEventSource(state, session) {
     state.haveEventSource.resolve()
@@ -29,27 +32,32 @@ export default {
     state.following.splice(state.following.indexOf(key), 1)
     db.following.delete(key)
   },
-  receivedSetMetadata(state, {event: evt, context}) {
-    let meta = JSON.parse(evt.content)
+  savePetName(state, {pubkey, name}) {
+    state.petnames[pubkey] = name
+    db.contactlist.put({pubkey, name})
+  },
+  receivedSetMetadata(state, {event, context}) {
+    let meta = JSON.parse(event.content)
     let storeable = {
-      pubkey: evt.pubkey,
-      time: evt.created_at,
+      pubkey: event.pubkey,
+      time: event.created_at,
       meta
     }
 
     if (context === 'requested') {
       // just someone we're viewing
-      if (!state.metadata.has(evt.pubkey)) {
-        state.metadata.set(evt.pubkey, meta)
+      if (!state.metadata.has(event.pubkey)) {
+        state.metadata.set(event.pubkey, meta)
       }
     } else if (context === 'happening') {
       // an update from someone we follow that happened just now
-      state.metadata.set(evt.pubkey, meta)
+      state.metadata.set(event.pubkey, meta)
       db.cachedmetadata.put(storeable)
     } else if (context === 'history') {
       // someone we follow, but an old update
-      db.cachedmetadata.get(evt.pubkey).then(data => {
+      db.cachedmetadata.get(event.pubkey).then(data => {
         if (data.time < storeable.time) {
+          state.metadata.set(event.pubkey, meta)
           db.cachedmetadata.put(storeable)
         }
       })
