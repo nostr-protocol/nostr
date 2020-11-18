@@ -13,6 +13,8 @@ import (
 	"gopkg.in/antage/eventsource.v1"
 )
 
+const BYTES_PER_KEY = 16
+
 var sessions = make(map[string]*eventsource.EventSource)
 var backsessions = make(map[*eventsource.EventSource]string)
 var slock = sync.Mutex{}
@@ -46,9 +48,6 @@ func listenUpdates(w http.ResponseWriter, r *http.Request) {
 			}()
 		}
 	}
-
-	// will return past items then track changes from these keys:
-	keys, _ := r.URL.Query()["key"]
 
 	es = eventsource.New(
 		&eventsource.Settings{
@@ -88,21 +87,40 @@ func listenUpdates(w http.ResponseWriter, r *http.Request) {
 
 	es.ServeHTTP(w, r)
 
-	// past events
-	inkeys := make([]string, 0, len(keys))
-	for _, key := range keys {
-		// to prevent sql attack here we will check if these keys are valid 32-byte hex
-		parsed, err := hex.DecodeString(key)
-		if err != nil || len(parsed) != 32 {
-			continue
+	// grab keys from which we will return items and track new events:
+	defer r.Body.Close()
+
+	var nkeys = make([]byte, 1)
+	_, err = r.Body.Read(nkeys)
+	if err != nil {
+		log.Warn().Err(err).Msg("failed to read number of keys")
+		w.WriteHeader(400)
+		return
+	}
+
+	keys := make([]string, int(nkeys[0]))
+	for k := 0; k < int(nkeys[0]); k++ {
+		var key = make([]byte, BYTES_PER_KEY)
+		_, err = r.Body.Read(key)
+		if err != nil {
+			log.Warn().Err(err).Msg("failed to read key")
+			w.WriteHeader(400)
+			return
 		}
-		inkeys = append(inkeys, fmt.Sprintf("'%x'", parsed))
+		keys[k] = hex.EncodeToString(key)
+	}
+
+	// past events
+	likekeys := make([]string, len(keys))
+	for k, key := range keys {
+		// this is not an sql attack because we know we are using hex keys only
+		likekeys[k] = fmt.Sprintf("pubkey LIKE '%x%%'", key)
 	}
 	var lastUpdates []Event
 	err := db.Select(&lastUpdates, `
         SELECT *, (SELECT count(*) FROM event AS r WHERE r.ref = event.id) AS rel
         FROM event
-        WHERE pubkey IN (`+strings.Join(inkeys, ",")+`)
+        WHERE `+strings.Join(likekeys, " OR ")+`
         ORDER BY created_at DESC
         LIMIT 50
     `)
