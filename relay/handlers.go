@@ -103,19 +103,31 @@ func requestUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var lastUpdates []Event
-	if err := db.Select(&lastUpdates, `
-        SELECT *, (SELECT count(*) FROM event AS r WHERE r.ref = event.id) AS rel
-        FROM event
-        WHERE pubkey = $1
-        ORDER BY created_at DESC
-        LIMIT 30
-    `, pubkey.PubKey); err == nil {
-		for _, evt := range lastUpdates {
-			jevent, _ := json.Marshal(evt)
+	go func() {
+		var metadata Event
+		if err := db.Get(&metadata, `
+            SELECT * FROM event
+            WHERE pubkey = $1 AND kind = 0
+        `, pubkey.PubKey); err == nil {
+			jevent, _ := json.Marshal(metadata)
 			(*es).SendEventMessage(string(jevent), "requested", "")
 		}
-	}
+	}()
+
+	go func() {
+		var lastUpdates []Event
+		if err := db.Select(&lastUpdates, `
+            SELECT *, (SELECT count(*) FROM event AS r WHERE r.ref = event.id) AS rel
+            FROM event
+            WHERE pubkey = $1 AND kind != 0
+            ORDER BY created_at DESC LIMIT 30
+        `, pubkey.PubKey); err == nil {
+			for _, evt := range lastUpdates {
+				jevent, _ := json.Marshal(evt)
+				(*es).SendEventMessage(string(jevent), "requested", "")
+			}
+		}
+	}()
 }
 
 func requestNote(w http.ResponseWriter, r *http.Request) {
