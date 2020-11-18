@@ -1,8 +1,16 @@
 <template>
   <section><b>Secret Key:</b> {{ $store.state.key }}</section>
   <section>
-    <b>Relays:</b>
-    <div v-for="(relay, i) in (relays || []).concat(null)">
+    <b>{{ showingIgnored ? 'Ignored relays' : 'Relays' }}:</b>
+    &nbsp;
+    <a v-if="ignored.length" @click="showingIgnored = !showingIgnored"
+      >show {{ showingIgnored ? 'active' : 'ignored' }}
+    </a>
+    <div v-if="showingIgnored" v-for="(relay, i) in (ignored || [])">
+      {{ relay.host }} {{ relay.recommender }}
+      <button @click="e => unignoreRelay(e, relay.host)">Unignore</button>
+    </div>
+    <div v-else v-for="(relay, i) in (relays || []).concat(null)">
       <form v-if="editing === i" @submit="saveRelay">
         <label>
           URL:
@@ -23,8 +31,9 @@
         <span v-if="relay">
           {{ relay.host }}: {{ relay.policy }}
           <button @click="e => editRelay(e, i)">Edit</button>
-          <button @click="e => recommendRelay(e, i)">Publish</button>
-          <button @click="e => deleteRelay(e, i)">Delete</button>
+          <button @click="e => recommendRelay(e, relay.host)">Recommend</button>
+          <button @click="e => ignoreRelay(e, relay.host)">Ignore</button>
+          {{ relay.recommender }}
         </span>
         <span v-else>
           <button @click="e => editRelay(e, i)">Add</button>
@@ -38,6 +47,7 @@
   export default {
     data() {
       return {
+        showingIgnored: false,
         editing: null,
         host: '',
         policy_r: false,
@@ -46,16 +56,21 @@
     },
     computed: {
       relays() {
-        return Array.from(this.$store.state.relays).sort((a, b) => {
-          let pa = a.policy
-          let pb = b.policy
-          if (pa === pb) return 0
-          if (pa === 'rw') return 1
-          if (pb === 'rw') return -1
-          if (pa === 'w') return 1
-          if (pb === 'w') return -1
-          return 0
-        })
+        return this.$store.state.relays
+          .filter(({policy}) => policy !== 'i')
+          .sort((a, b) => {
+            let pa = a.policy
+            let pb = b.policy
+            if (pa === pb) return 0
+            if (pa === 'rw') return 1
+            if (pb === 'rw') return -1
+            if (pa === 'w') return 1
+            if (pb === 'w') return -1
+            return 0
+          })
+      },
+      ignored() {
+        return this.$store.state.relays.filter(({policy}) => policy === 'i')
       }
     },
     methods: {
@@ -86,9 +101,9 @@
         }
 
         if (this.editing === this.relays.length) {
-          this.$store.commit('addRelay', relay)
+          this.$store.dispatch('addRelay', relay)
         } else if (this.editing >= 0) {
-          this.$store.commit('updateRelay', {
+          this.$store.dispatch('updateRelay', {
             ...relay,
             key: this.relays[this.editing].host
           })
@@ -96,13 +111,17 @@
 
         this.editing = null
       },
-      recommendRelay(e, i) {
+      recommendRelay(e, host) {
         e.preventDefault()
-        this.$store.dispatch('recommendRelay', this.relays[i].host)
+        this.$store.dispatch('recommendRelay', host)
       },
-      deleteRelay(e, i) {
+      ignoreRelay(e, host) {
         e.preventDefault()
-        this.$store.commit('deleteRelay', this.relays[i].host)
+        this.$store.dispatch('updateRelay', {key: host, host, policy: 'i'})
+      },
+      unignoreRelay(e, host) {
+        e.preventDefault()
+        this.$store.dispatch('updateRelay', {key: host, host, policy: ''})
       }
     }
   }
