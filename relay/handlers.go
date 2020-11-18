@@ -59,6 +59,19 @@ func saveUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// react to different kinds of events
+	switch evt.Kind {
+	case 0:
+		// delete past set_metadata events from this user
+		db.Exec(`DELETE FROM event WHERE pubkey = $1 AND kind = 1`, evt.PubKey)
+	case 1:
+		// do nothing
+	case 2:
+		// delete past recommend_server events that match this one
+		db.Exec(`DELETE FROM event WHERE pubkey = $1 AND kind = 2 AND content = $2`,
+			evt.PubKey, evt.Content)
+	}
+
 	// insert
 	_, err = db.Exec(`
         INSERT INTO event (id, pubkey, created_at, kind, ref, content, sig)
@@ -71,7 +84,6 @@ func saveUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(201)
-
 	notifyPubKeyEvent(evt.PubKey, &evt)
 }
 
