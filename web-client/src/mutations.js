@@ -56,7 +56,8 @@ export default {
     } else if (context === 'history') {
       // someone we follow, but an old update
       db.cachedmetadata.get(event.pubkey).then(data => {
-        if (data.time < storeable.time) {
+        // only save if it's newer than what we have
+        if (!data || data.time < storeable.time) {
           state.metadata.set(event.pubkey, meta)
           db.cachedmetadata.put(storeable)
         }
