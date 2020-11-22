@@ -1,12 +1,8 @@
 package main
 
 import (
-	"database/sql"
-	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"strings"
 	"sync"
 	"time"
 
@@ -21,7 +17,7 @@ var watchers = make(map[string][]*eventsource.EventSource)
 var backwatchers = make(map[*eventsource.EventSource][]string)
 var wlock = sync.Mutex{}
 
-func listenUpdates(w http.ResponseWriter, r *http.Request) {
+func listenEvents(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	var es eventsource.EventSource
 
@@ -46,9 +42,6 @@ func listenUpdates(w http.ResponseWriter, r *http.Request) {
 			}()
 		}
 	}
-
-	// will return past items then track changes from these keys:
-	keys, _ := r.URL.Query()["key"]
 
 	es = eventsource.New(
 		&eventsource.Settings{
@@ -87,53 +80,55 @@ func listenUpdates(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	es.ServeHTTP(w, r)
-
-	// past events
-	inkeys := make([]string, 0, len(keys))
-	for _, key := range keys {
-		// to prevent sql attack here we will check if these keys are valid 32-byte hex
-		parsed, err := hex.DecodeString(key)
-		if err != nil || len(parsed) != 32 {
-			continue
-		}
-		inkeys = append(inkeys, fmt.Sprintf("'%x'", parsed))
-	}
-	var lastUpdates []Event
-	err := db.Select(&lastUpdates, `
-        SELECT *, (SELECT count(*) FROM event AS r WHERE r.ref = event.id) AS rel
-        FROM event
-        WHERE pubkey IN (`+strings.Join(inkeys, ",")+`)
-        ORDER BY created_at DESC
-        LIMIT 50
-    `)
-	if err != nil && err != sql.ErrNoRows {
-		w.WriteHeader(500)
-		log.Warn().Err(err).Interface("keys", keys).Msg("failed to fetch updates")
-		return
-	}
-
-	for _, evt := range lastUpdates {
-		jevent, _ := json.Marshal(evt)
-		es.SendEventMessage(string(jevent), "history", "")
-	}
-
-	// listen to new events
-	watchPubKeys(keys, &es)
 }
 
 func watchPubKeys(keys []string, es *eventsource.EventSource) {
 	wlock.Lock()
 	defer wlock.Unlock()
 
-	backwatchers[es] = keys
+	currentKeys, _ := backwatchers[es]
+	backwatchers[es] = append(currentKeys, keys...)
 
 	for _, key := range keys {
-		if arr, ok := watchers[key]; ok {
-			watchers[key] = append(arr, es)
+		if ess, ok := watchers[key]; ok {
+			watchers[key] = append(ess, es)
 		} else {
 			watchers[key] = []*eventsource.EventSource{es}
 		}
 	}
+}
+
+func unwatchPubKeys(excludedKeys []string, es *eventsource.EventSource) {
+	wlock.Lock()
+	defer wlock.Unlock()
+
+	for _, key := range excludedKeys {
+		if ess, ok := watchers[key]; ok {
+			newEss := make([]*eventsource.EventSource, len(ess)-1)
+
+			var i = 0
+			for _, existingEs := range ess {
+				if existingEs == es {
+					continue
+				}
+				newEss[i] = existingEs
+				i++
+			}
+
+			watchers[key] = newEss
+		}
+	}
+
+	currentKeys, _ := backwatchers[es]
+	newKeys := make([]string, 0, len(currentKeys))
+	for _, currentKey := range currentKeys {
+		if inArray(excludedKeys, currentKey) {
+			continue
+		}
+		newKeys = append(newKeys, currentKey)
+	}
+
+	backwatchers[es] = newKeys
 }
 
 func removeFromWatchers(es *eventsource.EventSource) {
@@ -165,7 +160,7 @@ func notifyPubKeyEvent(key string, evt *Event) {
 	if ok {
 		for _, es := range arr {
 			jevent, _ := json.Marshal(evt)
-			(*es).SendEventMessage(string(jevent), "happening", "")
+			(*es).SendEventMessage(string(jevent), "n", "")
 		}
 	}
 }

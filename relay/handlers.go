@@ -2,10 +2,13 @@ package main
 
 import (
 	"crypto/sha256"
+	"database/sql"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -13,7 +16,7 @@ type ErrorResponse struct {
 	Error error `json:"error"`
 }
 
-func saveUpdate(w http.ResponseWriter, r *http.Request) {
+func saveEvent(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
 	var evt Event
@@ -87,6 +90,82 @@ func saveUpdate(w http.ResponseWriter, r *http.Request) {
 	notifyPubKeyEvent(evt.PubKey, &evt)
 }
 
+func requestFeed(w http.ResponseWriter, r *http.Request) {
+	es := grabNamedSession(r.URL.Query().Get("session"))
+	if es == nil {
+		w.WriteHeader(400)
+		return
+	}
+
+	var data struct {
+		Limit int `json:"limit"`
+	}
+	json.NewDecoder(r.Body).Decode(&data)
+
+	keys, ok := backwatchers[es]
+	if !ok {
+		return
+	}
+
+	inkeys := make([]string, 0, len(keys))
+	for _, key := range keys {
+		// to prevent sql attack here we will check if these keys are valid 32-byte hex
+		parsed, err := hex.DecodeString(key)
+		if err != nil || len(parsed) != 32 {
+			continue
+		}
+		inkeys = append(inkeys, fmt.Sprintf("'%x'", parsed))
+	}
+	var lastUpdates []Event
+	err := db.Select(&lastUpdates, `
+        SELECT *, (SELECT count(*) FROM event AS r WHERE r.ref = event.id) AS rel
+        FROM event
+        WHERE pubkey IN (`+strings.Join(inkeys, ",")+`)
+        ORDER BY created_at DESC
+        LIMIT 50
+    `)
+	if err != nil && err != sql.ErrNoRows {
+		w.WriteHeader(500)
+		log.Warn().Err(err).Interface("keys", keys).Msg("failed to fetch updates")
+		return
+	}
+
+	for _, evt := range lastUpdates {
+		jevent, _ := json.Marshal(evt)
+		(*es).SendEventMessage(string(jevent), "p", "")
+	}
+}
+
+func requestWatchKeys(w http.ResponseWriter, r *http.Request) {
+	es := grabNamedSession(r.URL.Query().Get("session"))
+	if es == nil {
+		w.WriteHeader(400)
+		return
+	}
+
+	var data struct {
+		Keys []string `json:"keys"`
+	}
+	json.NewDecoder(r.Body).Decode(&data)
+
+	watchPubKeys(data.Keys, es)
+}
+
+func requestUnwatchKeys(w http.ResponseWriter, r *http.Request) {
+	es := grabNamedSession(r.URL.Query().Get("session"))
+	if es == nil {
+		w.WriteHeader(400)
+		return
+	}
+
+	var data struct {
+		Keys []string `json:"keys"`
+	}
+	json.NewDecoder(r.Body).Decode(&data)
+
+	unwatchPubKeys(data.Keys, es)
+}
+
 func requestUser(w http.ResponseWriter, r *http.Request) {
 	es := grabNamedSession(r.URL.Query().Get("session"))
 	if es == nil {
@@ -94,11 +173,12 @@ func requestUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var pubkey struct {
+	var data struct {
 		PubKey string `json:"pubkey"`
+		Limit  int    `json:"limit"`
 	}
-	json.NewDecoder(r.Body).Decode(&pubkey)
-	if pubkey.PubKey == "" {
+	json.NewDecoder(r.Body).Decode(&data)
+	if data.PubKey == "" {
 		w.WriteHeader(400)
 		return
 	}
@@ -108,9 +188,9 @@ func requestUser(w http.ResponseWriter, r *http.Request) {
 		if err := db.Get(&metadata, `
             SELECT * FROM event
             WHERE pubkey = $1 AND kind = 0
-        `, pubkey.PubKey); err == nil {
+        `, data.PubKey); err == nil {
 			jevent, _ := json.Marshal(metadata)
-			(*es).SendEventMessage(string(jevent), "requested", "")
+			(*es).SendEventMessage(string(jevent), "r", "")
 		}
 	}()
 
@@ -121,10 +201,10 @@ func requestUser(w http.ResponseWriter, r *http.Request) {
             FROM event
             WHERE pubkey = $1 AND kind != 0
             ORDER BY created_at DESC LIMIT 30
-        `, pubkey.PubKey); err == nil {
+        `, data.PubKey); err == nil {
 			for _, evt := range lastUpdates {
 				jevent, _ := json.Marshal(evt)
-				(*es).SendEventMessage(string(jevent), "requested", "")
+				(*es).SendEventMessage(string(jevent), "r", "")
 			}
 		}
 	}()
@@ -137,11 +217,12 @@ func requestNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var id struct {
-		Id string `json:"id"`
+	var data struct {
+		Id    string `json:"id"`
+		Limit int    `json:"limit"`
 	}
-	json.NewDecoder(r.Body).Decode(&id)
-	if id.Id == "" {
+	json.NewDecoder(r.Body).Decode(&data)
+	if data.Id == "" {
 		w.WriteHeader(400)
 		return
 	}
@@ -150,9 +231,9 @@ func requestNote(w http.ResponseWriter, r *http.Request) {
 		var evt Event
 		if err := db.Get(&evt, `
             SELECT * FROM event WHERE id = $1
-        `, id.Id); err == nil {
+        `, data.Id); err == nil {
 			jevent, _ := json.Marshal(evt)
-			(*es).SendEventMessage(string(jevent), "requested", "")
+			(*es).SendEventMessage(string(jevent), "r", "")
 		}
 
 		if evt.Ref == "" {
@@ -164,7 +245,7 @@ func requestNote(w http.ResponseWriter, r *http.Request) {
             SELECT * FROM event WHERE id = $1
         `, evt.Ref); err == nil {
 			jevent, _ := json.Marshal(ref)
-			(*es).SendEventMessage(string(jevent), "requested", "")
+			(*es).SendEventMessage(string(jevent), "r", "")
 		}
 	}()
 
@@ -174,10 +255,10 @@ func requestNote(w http.ResponseWriter, r *http.Request) {
             SELECT * FROM event WHERE ref = $1
             -- UNION ALL
             -- SELECT * FROM event WHERE ref IN (SELECT ref FROM event WHERE ref = $1)
-        `, id.Id); err == nil {
+        `, data.Id); err == nil {
 			for _, evt := range related {
 				jevent, _ := json.Marshal(evt)
-				(*es).SendEventMessage(string(jevent), "requested", "")
+				(*es).SendEventMessage(string(jevent), "r", "")
 			}
 		}
 	}()

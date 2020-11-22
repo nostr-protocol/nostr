@@ -17,9 +17,8 @@ export default {
     }
     state.petnames = petnames
   },
-  gotEventSource(state, session) {
+  gotEventSource(state) {
     state.haveEventSource.resolve()
-    state.session = session
   },
   loadedRelays(state, relays) {
     state.relays = relays

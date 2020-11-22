@@ -37,11 +37,17 @@ func main() {
 		log.Fatal().Err(err).Msg("failed to open database")
 	}
 
-	router.Path("/query_users").Methods("GET").HandlerFunc(queryUsers)
-	router.Path("/listen_updates").Methods("GET").HandlerFunc(listenUpdates)
-	router.Path("/save_update").Methods("POST").HandlerFunc(saveUpdate)
+	// NIP01
+	router.Path("/listen_events").Methods("GET").HandlerFunc(listenEvents)
+	router.Path("/save_event").Methods("POST").HandlerFunc(saveEvent)
+	router.Path("/request_feed").Methods("POST").HandlerFunc(requestFeed)
+	router.Path("/request_watch").Methods("POST").HandlerFunc(requestWatchKeys)
+	router.Path("/request_unwatch").Methods("POST").HandlerFunc(requestUnwatchKeys)
 	router.Path("/request_user").Methods("POST").HandlerFunc(requestUser)
 	router.Path("/request_note").Methods("POST").HandlerFunc(requestNote)
+
+	// extra?
+	router.Path("/query_users").Methods("GET").HandlerFunc(queryUsers)
 
 	srv := &http.Server{
 		Handler:      cors.Default().Handler(router),

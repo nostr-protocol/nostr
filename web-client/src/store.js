@@ -29,7 +29,7 @@ export default createStore({
 
     return {
       haveEventSource,
-      session: null,
+      session: new Date().getTime() + '' + Math.round(Math.random() * 100000),
       relays,
       key: makeRandom32().toString('hex'),
       following: [],
@@ -125,9 +125,16 @@ function listener(store) {
     switch (mutation.type) {
       case 'setInit':
       case 'loadedRelays':
-      case 'follow':
-      case 'unfollow':
         restartListeners()
+        break
+      case 'follow':
+        let watch = watchKey.bind(null, mutation.payload)
+        store.getters.readServers.forEach(watch)
+        break
+      case 'unfollow':
+        let unwatch = unwatchKey.bind(null, mutation.payload)
+        store.getters.readServers.forEach(unwatch)
+        break
     }
   })
 
@@ -139,15 +146,28 @@ function listener(store) {
     store.getters.readServers.forEach(listenToRelay)
   }
 
-  function listenToRelay(host) {
+  function unwatchKey(key, host) {
+    window.fetch(host + '/request_unwatch?session=' + store.state.session, {
+      method: 'POST',
+      headers: {'content-type': 'application/json'},
+      body: JSON.stringify({keys: [key]})
+    })
+  }
+
+  function watchKey(key, host) {
+    window.fetch(host + '/request_watch?session=' + store.state.session, {
+      method: 'POST',
+      headers: {'content-type': 'application/json'},
+      body: JSON.stringify({keys: [key]})
+    })
+  }
+
+  async function listenToRelay(host) {
     if (store.state.following.length === 0) return
 
-    let session = new Date().getTime() + '' + Math.round(Math.random() * 100000)
-
     if (host.length && host[host.length - 1] === '/') host = host.slice(0, -1)
-    let qs = store.state.following.map(key => `key=${key}`).join('&')
     let es = new EventSource(
-      host + '/listen_updates?' + qs + '&session=' + session
+      host + '/listen_updates?session=' + store.state.session
     )
     ess.set(host, es)
 
@@ -156,19 +176,35 @@ function listener(store) {
       es.close()
       ess.delete(host)
     }
+    es.onopen = () => {
+      store.commit('gotEventSource')
+    }
 
-    store.commit('gotEventSource', session)
+    // add initial keys
+    await window.fetch(host + '/request_watch?session=' + store.state.session, {
+      method: 'POST',
+      headers: {'content-type': 'application/json'},
+      body: JSON.stringify({keys: store.state.following})
+    })
 
+    // handle anything
     es.addEventListener('notice', e => {
       console.log(e.data)
     })
-    ;['history', 'happening', 'requested'].forEach(context => {
+    ;['p', 'n', 'r'].forEach(context => {
       es.addEventListener(context, e => {
         store.dispatch('receivedEvent', {
           event: JSON.parse(e.data),
           context
         })
       })
+    })
+
+    // request initial feed
+    await window.fetch(host + '/request_feed?session=' + store.state.session, {
+      method: 'POST',
+      headers: {'content-type': 'application/json'},
+      body: JSON.stringify({limit: 100})
     })
   }
 }
