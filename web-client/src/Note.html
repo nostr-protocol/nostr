@@ -1,8 +1,8 @@
 <template>
   <article :class="{ours: ours}">
-    <div class="pubkey">
-      <a :href="'#/' + pubkey">{{ pubkey }}</a>
-    </div>
+    <header class="pubkey">
+      <a :href="'#/' + pubkey">{{ author }}</a>
+    </header>
     <p>{{ content }}</p>
     <em>
       <a :href="'#/n/' + id"
@@ -48,6 +48,13 @@
       },
       pubkey() {
         return this.event.pubkey
+      },
+      author() {
+        return (
+          this.$store.state.petnames[this.pubkey] ||
+          (this.$store.state.metadata.get(this.pubkey) || {}).name ||
+          this.pubkey
+        )
       },
       reference() {
         if (this.isFullPage && this.event.ref) {
