@@ -27,7 +27,7 @@
         </label>
       </div>
       <div v-else>
-        <h1>{{ name }}</h1>
+        <h1>{{ $store.getters.keyName(pubkey) }}</h1>
         <button v-if="!myself" @click="editingName = name">Rename</button>
       </div>
     </div>
@@ -71,12 +71,6 @@
       },
       metadata() {
         return this.$store.state.metadata.get(this.$route.params.key) || {}
-      },
-      petname() {
-        return this.$store.state.petnames[this.$route.params.key]
-      },
-      name() {
-        return this.petname || this.metadata.name
       },
       following() {
         return (

@@ -7,7 +7,13 @@
       >show {{ showingIgnored ? 'active' : 'ignored' }}
     </a>
     <div v-if="showingIgnored" v-for="(relay, i) in (ignored || [])">
-      {{ relay.host }} {{ relay.recommender }}
+      {{ relay.host }}
+      <span v-if="relay.recommender"
+        >recommended by:
+        <a :href="'#/' + relay.recommender"
+          >{{ $store.getters.keyName(relay.recommender) }}</a
+        >&nbsp;</span
+      >
       <button @click="e => unignoreRelay(e, relay.host)">Unignore</button>
     </div>
     <div v-else v-for="(relay, i) in (relays || []).concat(null)">
@@ -33,7 +39,12 @@
           <button @click="e => editRelay(e, i)">Edit</button>
           <button @click="e => recommendRelay(e, relay.host)">Recommend</button>
           <button @click="e => ignoreRelay(e, relay.host)">Ignore</button>
-          {{ relay.recommender }}
+          <span v-if="relay.recommender"
+            >recommended by:
+            <a :href="'#/' + relay.recommender"
+              >{{ $store.getters.keyName(relay.recommender) }}</a
+            >&nbsp;</span
+          >
         </span>
         <span v-else>
           <button @click="e => editRelay(e, i)">Add</button>

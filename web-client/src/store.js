@@ -49,7 +49,11 @@ export default createStore({
     readServers: state =>
       state.relays
         .filter(({policy}) => policy.indexOf('r') !== -1)
-        .map(({host}) => host)
+        .map(({host}) => host),
+    keyName: state => pubkey =>
+      state.petnames[pubkey] ||
+      (state.metadata.get(pubkey) || {}).name ||
+      pubkey.slice(0, 4) + '…' + pubkey.slice(-4)
   },
   mutations,
   actions
