@@ -20,6 +20,9 @@ export default {
   gotEventSource(state) {
     state.haveEventSource.resolve()
   },
+  setSecretKey(state, newKey) {
+    state.key = newKey
+  },
   loadedRelays(state, relays) {
     state.relays = relays
   },

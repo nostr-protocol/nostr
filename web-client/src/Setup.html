@@ -1,5 +1,18 @@
 <template>
-  <section><b>Secret Key:</b> {{ $store.state.key }}</section>
+  <section>
+    <b>Secret Key:</b>
+    <div v-if="typeof importing !== 'string'">
+      {{ $store.state.key }}
+      <button @click="importing = ''">
+        Import a secret key from elsewhere
+      </button>
+    </div>
+    <form v-else @submit="saveImported">
+      <input v-model="importing" />
+      <button :disabled="!isValidKey(importing)">Save</button>
+      <button @click="importing = null">Cancel</button>
+    </form>
+  </section>
   <section>
     <b>{{ showingIgnored ? 'Ignored relays' : 'Relays' }}:</b>
     &nbsp;
@@ -58,6 +71,7 @@
   export default {
     data() {
       return {
+        importing: null,
         showingIgnored: false,
         editing: null,
         host: '',
@@ -85,6 +99,17 @@
       }
     },
     methods: {
+      isValidKey(key) {
+        if (typeof key !== 'string') return false
+        if (key.length !== 64) return false
+        if (!/^[0-9a-f]+$/.exec(key.toLowerCase())) return false
+        return true
+      },
+      saveImported(e) {
+        e.preventDefault()
+        this.$store.dispatch('importSecretKey', this.importing)
+        this.importing = null
+      },
       cancelRelay(e) {
         e.preventDefault()
         e.stopPropagation()

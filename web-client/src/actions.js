@@ -4,6 +4,22 @@ import {verifySignature, publishEvent} from './helpers'
 import {db} from './globals'
 
 export default {
+  async importSecretKey(store, newKey) {
+    // save previous key in case the user wants it back later
+    var discardedSecretKeys = JSON.parse(
+      window.localStorage.getItem('discardedSecretKeys') || '[]'
+    )
+    discardedSecretKeys.push(store.state.key)
+    window.localStorage.setItem(
+      'discardedSecretKeys',
+      JSON.stringify(discardedSecretKeys)
+    )
+
+    // save new secret key in the database
+    await db.settings.put({key: 'key', value: newKey})
+
+    store.commit('setSecretKey', newKey)
+  },
   async receivedEvent(store, {event, context}) {
     if (!verifySignature(event)) {
       console.log('received event with invalid signature', event)
