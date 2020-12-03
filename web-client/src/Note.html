@@ -1,28 +1,42 @@
 <template>
-  <article :class="{ours: ours}">
-    <header class="pubkey">
-      <a :href="'#/' + $store.getters.keyName(pubkey)">{{ author }}</a>
-    </header>
-    <p>{{ content }}</p>
-    <em>
-      <a :href="'#/n/' + id"
-        ><time :datetime="isoDate(created_at)" :title="isoDate(created_at)"
-          >{{ humanDate(created_at) }}</time
-        ></a
-      >
-      <span
-        v-if="ours"
-        class="publish-status"
-        v-for="({time, status}, host) in ($store.state.publishStatus[id] || {})"
-      >
-        {{ host }}: {{ status }} @ {{ time }}
-      </span>
-    </em>
+  <article class="Note" :class="{ours: ours}">
     <div v-if="reference" class="reference">
       <Note :note="reference" />
     </div>
+    <header class="pubkey">
+      <a :href="'#/' + pubkey">{{ $store.getters.keyName(pubkey) }}</a>
+    </header>
+    <p>{{ content }}</p>
+    <footer>
+      <div>
+        <em>
+          <a :href="'#/n/' + id"
+            ><time :datetime="isoDate(created_at)" :title="isoDate(created_at)"
+              >{{ humanDate(created_at) }}</time
+            ></a
+          >
+        </em>
+      </div>
+      <div>
+        <a @click="referencing = !referencing">Quote/Reply</a>
+      </div>
+      <div v-if="ours">
+        <div
+          class="publish-status"
+          v-for="({time, status}, host) in ($store.state.publishStatus[id] || {})"
+        >
+          {{ host }}: {{ status }} @ {{ humanDate(time) }}
+          <button v-if="status == 'failed'" @click="republish">retry</button>
+        </div>
+      </div>
+    </footer>
+    <Publish
+      v-if="referencing"
+      :reference="id"
+      @publish="referencing = false"
+    />
+    <List v-if="isFullPage" :notes="related" />
   </article>
-  <List v-if="isFullPage" :notes="related" />
 </template>
 
 <script>
@@ -30,6 +44,11 @@
 
   export default {
     props: ['note'],
+    data() {
+      return {
+        referencing: false
+      }
+    },
     computed: {
       isFullPage() {
         return !this.note
@@ -71,10 +90,16 @@
     },
     methods: {
       isoDate(d) {
+        if (typeof d === 'number') d = new Date(d * 1000)
         return d && d.toISOString()
       },
       humanDate(d) {
+        if (typeof d === 'number') d = new Date(d * 1000)
         return d && prettydate.format(d)
+      },
+      republish(e) {
+        e.preventDefault()
+        this.$store.dispatch('broadcastEvent', this.note)
       }
     },
     mounted() {
@@ -86,22 +111,28 @@
 </script>
 
 <style scoped>
-  article {
-    margin: 10px 0;
+  .Note {
+    padding: 5px 10px;
+    margin: 5px 0;
+    border: 2px dotted;
   }
-  article.ours {
+  .Note.ours {
     background-color: orange;
   }
-  p {
+  .Note p {
     margin: 0;
     padding-left: 20px;
   }
-  .reference {
+  .Note .reference {
     background-color: lightblue;
   }
-  .publish-status {
-    display: inline-block;
-    margin-left: 10px;
+  .Note .publish-status {
     font-size: 0.5em;
+  }
+  .Note footer {
+    display: flex;
+  }
+  .Note footer > * {
+    margin: 0 10px;
   }
 </style>

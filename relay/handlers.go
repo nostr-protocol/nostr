@@ -81,6 +81,12 @@ func saveEvent(w http.ResponseWriter, r *http.Request) {
         VALUES ($1, $2, $3, $4, $5, $6, $7)
     `, evt.ID, evt.PubKey, evt.CreatedAt, evt.Kind, evt.Ref, evt.Content, evt.Sig)
 	if err != nil {
+		if strings.Index(err.Error(), "UNIQUE") != -1 {
+			// already exists
+			w.WriteHeader(200)
+			return
+		}
+
 		log.Warn().Err(err).Str("pubkey", evt.PubKey).Msg("failed to save")
 		w.WriteHeader(500)
 		return

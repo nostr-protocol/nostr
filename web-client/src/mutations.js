@@ -4,9 +4,8 @@ import {pubkeyFromPrivate} from './helpers'
 import {db} from './globals'
 
 export default {
-  setInit(state, {relays, key, following, home, metadata, petnames}) {
+  setInit(state, {relays, following, home, metadata, petnames}) {
     state.relays = relays
-    state.key = key
     state.following = following.concat(
       // always be following thyself
       pubkeyFromPrivate(state.key)
@@ -77,8 +76,11 @@ export default {
       state.home.set(evt.id + ':' + evt.created_at, evt)
     }
   },
+  saveMyOwnNote() {},
   updatePublishStatus(state, {id, time, host, status}) {
-    if (!(id in state.publishStatus)) state.publishStatus[id] = {}
-    state.publishStatus[id][host] = {time, status}
+    state.publishStatus = {
+      ...state.publishStatus,
+      [id]: {...(state.publishStatus[id] || {}), [host]: {time, status}}
+    }
   }
 }

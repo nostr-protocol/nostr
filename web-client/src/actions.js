@@ -1,6 +1,7 @@
 // vuex store actions
 
-import {verifySignature, publishEvent} from './helpers'
+import {verifySignature, publishEvent, broadcastEvent} from './helpers'
+import {KIND_METADATA, KIND_TEXTNOTE, KIND_RECOMMENDSERVER} from './constants'
 import {db} from './globals'
 
 export default {
@@ -15,8 +16,8 @@ export default {
       JSON.stringify(discardedSecretKeys)
     )
 
-    // save new secret key in the database
-    await db.settings.put({key: 'key', value: newKey})
+    // save new secret key
+    localStorage.setItem('key', newKey)
 
     store.commit('setSecretKey', newKey)
   },
@@ -27,13 +28,13 @@ export default {
     }
 
     switch (event.kind) {
-      case 0: // setMetadata
+      case KIND_METADATA:
         store.commit('receivedSetMetadata', {event, context})
         break
-      case 1: // textNote
+      case KIND_TEXTNOTE:
         store.commit('receivedTextNote', {event, context})
         break
-      case 2: // recommendServer
+      case KIND_RECOMMENDSERVER:
         let host = event.content
 
         try {
@@ -100,12 +101,15 @@ export default {
       })
     }
   },
+  async broadcastEvent(store, event) {
+    await broadcastEvent(event, store.getters.writeServers)
+  },
   async publishMetadata(store, meta) {
     let event = await publishEvent(
       {
         pubkey: store.getters.pubKeyHex,
         created_at: Math.round(new Date().getTime() / 1000),
-        kind: 0,
+        kind: KIND_METADATA,
         content: JSON.stringify(meta)
       },
       store.state.key,
@@ -114,12 +118,13 @@ export default {
 
     store.commit('receivedSetMetadata', {event, context: 'happening'})
   },
-  async publishNote(store, text) {
+  async publishNote(store, {text, reference}) {
     let event = await publishEvent(
       {
         pubkey: store.getters.pubKeyHex,
         created_at: Math.round(new Date().getTime() / 1000),
-        kind: 1,
+        reference,
+        kind: KIND_TEXTNOTE,
         content: text.trim()
       },
       store.state.key,
@@ -134,7 +139,7 @@ export default {
       {
         pubkey: store.getters.pubKeyHex,
         created_at: Math.round(new Date().getTime() / 1000),
-        kind: 2,
+        kind: KIND_RECOMMENDSERVER,
         content: host
       },
       store.state.key,

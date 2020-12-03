@@ -13,6 +13,12 @@ export default createStore({
     : []
   ).concat([init, listener, publishStatusLoader]),
   state() {
+    let secretKey = localStorage.getItem('key')
+    if (!secretKey) {
+      secretKey = makeRandom32().toString('hex')
+      localStorage.setItem('key', secretKey)
+    }
+
     let relays = [
       {
         host: 'https://nostr-relay.bigsun.xyz',
@@ -31,7 +37,7 @@ export default createStore({
       haveEventSource,
       session: new Date().getTime() + '' + Math.round(Math.random() * 100000),
       relays,
-      key: makeRandom32().toString('hex'),
+      key: secretKey,
       following: [],
       home: new SortedMap(),
       metadata: new LRU({maxSize: 100}),
@@ -53,7 +59,8 @@ export default createStore({
     keyName: state => pubkey =>
       state.petnames[pubkey] ||
       (state.metadata.get(pubkey) || {}).name ||
-      pubkey.slice(0, 4) + '…' + pubkey.slice(-4)
+      (pubkey && pubkey.slice(0, 4) + '…' + pubkey.slice(-4)) ||
+      ''
   },
   mutations,
   actions
@@ -61,16 +68,6 @@ export default createStore({
 
 async function init(store) {
   let data = await Promise.all([
-    db.settings.get('key').then(row => {
-      if (!row) {
-        // use the key we generated on startup and save it
-        db.settings.put({key: 'key', value: store.state.key})
-        return store.state.key
-      } else {
-        // use the key that was stored
-        return row.value
-      }
-    }),
     db.relays.toArray().then(rls => {
       // if blank, use hardcoded values
       if (rls.length === 0) {
@@ -107,17 +104,32 @@ async function init(store) {
   ])
 
   store.commit('setInit', {
-    key: data[0],
-    relays: data[1],
-    following: data[2],
-    home: data[3],
-    metadata: data[4],
-    petnames: data[5]
+    relays: data[0],
+    following: data[1],
+    home: data[2],
+    metadata: data[3],
+    petnames: data[4]
   })
 }
 
 function publishStatusLoader(store) {
+  db.publishlog.toArray().then(logs => {
+    logs.forEach(({id, time, host, status}) => {
+      if (time < new Date().getTime() / 1000 - 60 * 60 * 24 * 30) {
+        // older than 30 days, delete and ignore
+        db.publishlog.delete([id, host])
+        return
+      }
+
+      store.commit('updatePublishStatus', {id, time, host, status})
+    })
+  })
+
   db.publishlog.hook('creating', (_, {id, time, host, status}) => {
+    store.commit('updatePublishStatus', {id, time, host, status})
+  })
+  db.publishlog.hook('updating', (mod, _, prev) => {
+    let {id, time, host, status} = {...prev, ...mod}
     store.commit('updatePublishStatus', {id, time, host, status})
   })
 }

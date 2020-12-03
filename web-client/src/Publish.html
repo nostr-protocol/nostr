@@ -1,0 +1,47 @@
+<template>
+  <form @submit="publishNote">
+    <legend>Publishing to {{ writeServersList }}</legend>
+    <label
+      >Write anything:
+      <input :disabled="publishing" v-model="text" />
+    </label>
+    <button :disabled="publishing">Publish</button>
+  </form>
+</template>
+
+<script>
+  export default {
+    props: ['reference'],
+    data() {
+      return {
+        text: '',
+        publishing: false
+      }
+    },
+    computed: {
+      writeServersList() {
+        return JSON.stringify(this.$store.getters.writeServers)
+          .replace(/"/g, '')
+          .replace(/,/g, ' ')
+      }
+    },
+    methods: {
+      async publishNote(ev) {
+        ev.preventDefault()
+        this.publishing = true
+
+        try {
+          await this.$store.dispatch('publishNote', {
+            text: this.text,
+            reference: this.reference
+          })
+          this.text = ''
+          this.$emit('publish')
+        } catch (err) {
+          console.log('error publishing', err)
+        }
+        this.publishing = false
+      }
+    }
+  }
+</script>

@@ -27,11 +27,18 @@
         </label>
       </div>
       <div v-else>
-        <h1>{{ $store.getters.keyName(pubkey) }}</h1>
-        <button v-if="!myself" @click="editingName = name">Rename</button>
+        <h1>{{ $store.getters.keyName(this.$route.params.key) }}</h1>
+        <button
+          v-if="!myself"
+          @click="editingName = $store.getters.keyName(this.$route.params.key)"
+        >
+          Rename
+        </button>
       </div>
     </div>
-    <h2 v-if="name !== metadata.name">{{ metadata.name }}</h2>
+    <h2 v-if="$store.getters.keyName(this.$route.params.key) !== metadata.name">
+      {{ metadata.name }}
+    </h2>
     <div v-if="!myself">
       <button v-if="following" @click="unfollow">Unfollow</button>
       <button v-else @click="follow">Follow</button>
