@@ -183,12 +183,12 @@ function listener(store) {
 
     if (host.length && host[host.length - 1] === '/') host = host.slice(0, -1)
     let es = new EventSource(
-      host + '/listen_updates?session=' + store.state.session
+      host + '/listen_events?session=' + store.state.session
     )
     ess.set(host, es)
 
     es.onerror = err => {
-      console.log(`${host}/listen_updates error`, err)
+      console.log(`${host}/listen_events error`, err)
       es.close()
       ess.delete(host)
     }
