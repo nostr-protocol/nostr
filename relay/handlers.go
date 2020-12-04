@@ -124,7 +124,7 @@ func requestFeed(w http.ResponseWriter, r *http.Request) {
 	}
 	var lastUpdates []Event
 	err := db.Select(&lastUpdates, `
-        SELECT *, (SELECT count(*) FROM event AS r WHERE r.ref = event.id) AS rel
+        SELECT *
         FROM event
         WHERE pubkey IN (`+strings.Join(inkeys, ",")+`)
         ORDER BY created_at DESC
@@ -197,14 +197,17 @@ func requestUser(w http.ResponseWriter, r *http.Request) {
         `, data.PubKey); err == nil {
 			jevent, _ := json.Marshal(metadata)
 			(*es).SendEventMessage(string(jevent), "r", "")
+		} else {
+			log.Warn().Err(err).
+				Str("key", data.PubKey).
+				Msg("error fetching metadata from requested user")
 		}
 	}()
 
 	go func() {
 		var lastUpdates []Event
 		if err := db.Select(&lastUpdates, `
-            SELECT *, (SELECT count(*) FROM event AS r WHERE r.ref = event.id) AS rel
-            FROM event
+            SELECT * FROM event
             WHERE pubkey = $1 AND kind != 0
             ORDER BY created_at DESC LIMIT 30
         `, data.PubKey); err == nil {
@@ -212,6 +215,10 @@ func requestUser(w http.ResponseWriter, r *http.Request) {
 				jevent, _ := json.Marshal(evt)
 				(*es).SendEventMessage(string(jevent), "r", "")
 			}
+		} else {
+			log.Warn().Err(err).
+				Str("key", data.PubKey).
+				Msg("error fetching updates from requested user")
 		}
 	}()
 }
