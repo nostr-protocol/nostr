@@ -1,7 +1,7 @@
 // vuex store actions
 
 import {verifySignature, publishEvent, broadcastEvent} from './helpers'
-import {KIND_METADATA, KIND_TEXTNOTE, KIND_RECOMMENDSERVER} from './constants'
+import {CONTEXT_NOW, KIND_METADATA, KIND_TEXTNOTE, KIND_RECOMMENDSERVER} from './constants'
 import {db} from './globals'
 
 export default {
@@ -116,7 +116,7 @@ export default {
       store.getters.writeServers
     )
 
-    store.commit('receivedSetMetadata', {event, context: 'happening'})
+    store.commit('receivedSetMetadata', {event, context: CONTEXT_NOW})
   },
   async publishNote(store, {text, reference}) {
     let event = await publishEvent(
@@ -132,7 +132,7 @@ export default {
     )
 
     db.mynotes.put(event)
-    store.commit('receivedTextNote', {event, context: 'happening'})
+    store.commit('receivedTextNote', {event, context: CONTEXT_NOW})
   },
   async recommendRelay(store, host) {
     publishEvent(

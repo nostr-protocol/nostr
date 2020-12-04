@@ -2,6 +2,7 @@
 
 import {pubkeyFromPrivate} from './helpers'
 import {db} from './globals'
+import {CONTEXT_REQUESTED, CONTEXT_NOW, CONTEXT_PAST} from './constants'
 
 export default {
   setInit(state, {relays, following, home, metadata, petnames}) {
@@ -45,16 +46,16 @@ export default {
       meta
     }
 
-    if (context === 'requested') {
+    if (context === CONTEXT_REQUESTED) {
       // just someone we're viewing
       if (!state.metadata.has(event.pubkey)) {
         state.metadata.set(event.pubkey, meta)
       }
-    } else if (context === 'happening') {
+    } else if (context === CONTEXT_NOW) {
       // an update from someone we follow that happened just now
       state.metadata.set(event.pubkey, meta)
       db.cachedmetadata.put(storeable)
-    } else if (context === 'history') {
+    } else if (context === CONTEXT_PAST) {
       // someone we follow, but an old update
       db.cachedmetadata.get(event.pubkey).then(data => {
         // only save if it's newer than what we have
@@ -66,7 +67,7 @@ export default {
     }
   },
   receivedTextNote(state, {event: evt, context}) {
-    if (context === 'requested') {
+    if (context === CONTEXT_REQUESTED) {
       state.browsing.set(evt.id, evt)
       state.browsing.set('from:' + evt.pubkey, evt)
       if (evt.ref && evt.ref.length) {
