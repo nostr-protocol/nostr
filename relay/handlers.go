@@ -197,7 +197,7 @@ func requestUser(w http.ResponseWriter, r *http.Request) {
         `, data.PubKey); err == nil {
 			jevent, _ := json.Marshal(metadata)
 			(*es).SendEventMessage(string(jevent), "r", "")
-		} else {
+		} else if err != sql.ErrNoRows {
 			log.Warn().Err(err).
 				Str("key", data.PubKey).
 				Msg("error fetching metadata from requested user")
@@ -215,7 +215,7 @@ func requestUser(w http.ResponseWriter, r *http.Request) {
 				jevent, _ := json.Marshal(evt)
 				(*es).SendEventMessage(string(jevent), "r", "")
 			}
-		} else {
+		} else if err != sql.ErrNoRows {
 			log.Warn().Err(err).
 				Str("key", data.PubKey).
 				Msg("error fetching updates from requested user")
