@@ -93,9 +93,19 @@ func requestFeed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var data struct {
-		Limit int `json:"limit"`
+		Limit  int `json:"limit"`
+		Offset int `json:"offset"`
 	}
 	json.NewDecoder(r.Body).Decode(&data)
+
+	if data.Limit <= 0 || data.Limit > 100 {
+		data.Limit = 50
+	}
+	if data.Offset < 0 {
+		data.Offset = 0
+	} else if data.Offset > 500 {
+		return
+	}
 
 	keys, ok := backwatchers[es]
 	if !ok {
@@ -117,8 +127,9 @@ func requestFeed(w http.ResponseWriter, r *http.Request) {
         FROM event
         WHERE pubkey IN (`+strings.Join(inkeys, ",")+`)
         ORDER BY created_at DESC
-        LIMIT 50
-    `)
+        LIMIT $1
+        OFFSET $2
+    `, data.Limit, data.Offset)
 	if err != nil && err != sql.ErrNoRows {
 		w.WriteHeader(500)
 		log.Warn().Err(err).Interface("keys", keys).Msg("failed to fetch updates")
@@ -171,10 +182,19 @@ func requestUser(w http.ResponseWriter, r *http.Request) {
 	var data struct {
 		PubKey string `json:"pubkey"`
 		Limit  int    `json:"limit"`
+		Offset int    `json:"offset"`
 	}
 	json.NewDecoder(r.Body).Decode(&data)
 	if data.PubKey == "" {
 		w.WriteHeader(400)
+		return
+	}
+	if data.Limit <= 0 || data.Limit > 100 {
+		data.Limit = 30
+	}
+	if data.Offset < 0 {
+		data.Offset = 0
+	} else if data.Offset > 300 {
 		return
 	}
 
@@ -198,8 +218,9 @@ func requestUser(w http.ResponseWriter, r *http.Request) {
 		if err := db.Select(&lastUpdates, `
             SELECT * FROM event
             WHERE pubkey = $1 AND kind != 0
-            ORDER BY created_at DESC LIMIT 30
-        `, data.PubKey); err == nil {
+            ORDER BY created_at DESC
+            LIMIT $1 OFFSET $2
+        `, data.PubKey, data.Limit, data.Offset); err == nil {
 			for _, evt := range lastUpdates {
 				jevent, _ := json.Marshal(evt)
 				(*es).SendEventMessage(string(jevent), "r", "")
@@ -228,6 +249,9 @@ func requestNote(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
+	if data.Limit > 100 || data.Limit <= 0 {
+		data.Limit = 50
+	}
 
 	go func() {
 		var evt Event
@@ -255,9 +279,8 @@ func requestNote(w http.ResponseWriter, r *http.Request) {
 		var related []Event
 		if err := db.Select(`
             SELECT * FROM event WHERE ref = $1
-            -- UNION ALL
-            -- SELECT * FROM event WHERE ref IN (SELECT ref FROM event WHERE ref = $1)
-        `, data.Id); err == nil {
+            LIMIT $2
+        `, data.Id, data.Limit); err == nil {
 			for _, evt := range related {
 				jevent, _ := json.Marshal(evt)
 				(*es).SendEventMessage(string(jevent), "r", "")
