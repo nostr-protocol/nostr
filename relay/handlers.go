@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 )
 
 type ErrorResponse struct {
@@ -24,16 +23,6 @@ func saveEvent(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(400)
 		log.Warn().Err(err).Msg("couldn't decode body")
-		return
-	}
-
-	// safety checks
-	now := time.Now().UTC().Unix()
-	if uint32(now-3600) > evt.CreatedAt || uint32(now+3600) < evt.CreatedAt {
-		w.WriteHeader(400)
-		log.Warn().Err(err).Time("now", time.Unix(now, 0)).
-			Time("event", time.Unix(int64(evt.CreatedAt), 0)).
-			Msg("time mismatch")
 		return
 	}
 
