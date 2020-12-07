@@ -41,7 +41,7 @@ export default createStore({
       following: [],
       home: new SortedMap(),
       metadata: new LRU({maxSize: 100}),
-      browsing: new LRU({maxSize: 300}),
+      browsing: new LRU({maxSize: 500}),
       publishStatus: {},
       petnames: {}
     }

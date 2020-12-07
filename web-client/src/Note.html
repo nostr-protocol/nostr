@@ -57,7 +57,9 @@
         return this.note ? this.note.id : this.$route.params.id
       },
       event() {
-        return this.note || this.$store.state.browsing.get(this.id) || {}
+        return (
+          this.note || this.$store.state.browsing.get(this.id.slice(0, 5)) || {}
+        )
       },
       created_at() {
         return this.event.created_at && new Date(this.event.created_at * 1000)
@@ -70,14 +72,14 @@
       },
       reference() {
         if (this.isFullPage && this.event.ref) {
-          return this.$store.state.browsing.get(this.event.ref)
+          return this.$store.state.browsing.get(this.event.ref.slice(0, 5))
         }
       },
       related() {
         var rel = []
         if (this.isFullPage) {
           for (let k of this.$store.state.browsing.keys()) {
-            if (k === 'rel:' + this.id) {
+            if (k.slice(0, 9) == 'rel:' + this.id.slice(0, 5)) {
               rel.push(this.$store.state.browsing.get(k))
             }
           }

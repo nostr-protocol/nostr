@@ -67,13 +67,18 @@ export default {
     }
   },
   receivedTextNote(state, {event: evt, context}) {
-    if (context === CONTEXT_REQUESTED) {
-      state.browsing.set(evt.id, evt)
-      state.browsing.set('from:' + evt.pubkey, evt)
-      if (evt.ref && evt.ref.length) {
-        state.browsing.set('rel:' + evt.ref, evt)
-      }
-    } else {
+    // all notes go to browsing
+    state.browsing.set(evt.id.slice(0, 5), evt)
+    state.browsing.set('from:' + evt.pubkey.slice(0, 5), evt)
+    if (evt.ref && evt.ref.length) {
+      state.browsing.set(
+        'rel:' + evt.ref.slice(0, 5) + ':' + evt.id.slice(0, 5),
+        evt
+      )
+    }
+
+    // only past and happening notes go to the main feed
+    if (context !== CONTEXT_REQUESTED) {
       state.home.set(evt.id + ':' + evt.created_at, evt)
     }
   },
