@@ -104,7 +104,7 @@
     },
     mounted() {
       if (!this.note) {
-        this.$store.dispatch('browseNote', this.$route.params.id)
+        this.$store.dispatch('browseEvent', this.$route.params.id)
       }
     }
   }

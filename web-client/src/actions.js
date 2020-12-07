@@ -1,7 +1,12 @@
 // vuex store actions
 
 import {verifySignature, publishEvent, broadcastEvent} from './helpers'
-import {CONTEXT_NOW, KIND_METADATA, KIND_TEXTNOTE, KIND_RECOMMENDSERVER} from './constants'
+import {
+  CONTEXT_NOW,
+  KIND_METADATA,
+  KIND_TEXTNOTE,
+  KIND_RECOMMENDSERVER
+} from './constants'
 import {db} from './globals'
 
 export default {
@@ -90,11 +95,11 @@ export default {
       })
     }
   },
-  async browseNote(store, id) {
+  async browseEvent(store, id) {
     await store.state.haveEventSource
     for (let i = 0; i < store.getters.readServers.length; i++) {
       let host = store.getters.readServers[i]
-      window.fetch(host + '/request_note?session=' + store.state.session, {
+      window.fetch(host + '/request_event?session=' + store.state.session, {
         method: 'POST',
         headers: {'content-type': 'application/json'},
         body: JSON.stringify({id})
@@ -123,7 +128,7 @@ export default {
       {
         pubkey: store.getters.pubKeyHex,
         created_at: Math.round(new Date().getTime() / 1000),
-        reference,
+        ref: reference,
         kind: KIND_TEXTNOTE,
         content: text.trim()
       },

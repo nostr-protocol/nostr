@@ -219,7 +219,7 @@ func requestUser(w http.ResponseWriter, r *http.Request) {
             SELECT * FROM event
             WHERE pubkey = $1 AND kind != 0
             ORDER BY created_at DESC
-            LIMIT $1 OFFSET $2
+            LIMIT $2 OFFSET $3
         `, data.PubKey, data.Limit, data.Offset); err == nil {
 			for _, evt := range lastUpdates {
 				jevent, _ := json.Marshal(evt)
@@ -233,7 +233,7 @@ func requestUser(w http.ResponseWriter, r *http.Request) {
 	}()
 }
 
-func requestNote(w http.ResponseWriter, r *http.Request) {
+func requestEvent(w http.ResponseWriter, r *http.Request) {
 	es := grabNamedSession(r.URL.Query().Get("session"))
 	if es == nil {
 		w.WriteHeader(400)
@@ -254,37 +254,53 @@ func requestNote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	go func() {
+		// get requested event
 		var evt Event
 		if err := db.Get(&evt, `
             SELECT * FROM event WHERE id = $1
         `, data.Id); err == nil {
 			jevent, _ := json.Marshal(evt)
 			(*es).SendEventMessage(string(jevent), "r", "")
+		} else if err != sql.ErrNoRows {
+			log.Warn().Err(err).
+				Str("key", data.Id).
+				Msg("error fetching a specific event")
 		}
 
 		if evt.Ref == "" {
 			return
 		}
 
+		// get referenced event
 		var ref Event
 		if err := db.Get(&ref, `
             SELECT * FROM event WHERE id = $1
         `, evt.Ref); err == nil {
 			jevent, _ := json.Marshal(ref)
 			(*es).SendEventMessage(string(jevent), "r", "")
+		} else if err != sql.ErrNoRows {
+			log.Warn().Err(err).
+				Str("key", data.Id).Str("ref", evt.Ref).
+				Msg("error fetching a referenced event")
 		}
 	}()
 
 	go func() {
+		// get events that reference this
 		var related []Event
-		if err := db.Select(`
-            SELECT * FROM event WHERE ref = $1
+		if err := db.Select(&related, `
+            SELECT * FROM event
+            WHERE ref = $1
             LIMIT $2
         `, data.Id, data.Limit); err == nil {
 			for _, evt := range related {
 				jevent, _ := json.Marshal(evt)
 				(*es).SendEventMessage(string(jevent), "r", "")
 			}
+		} else if err != sql.ErrNoRows {
+			log.Warn().Err(err).
+				Str("key", data.Id).
+				Msg("error fetching events that reference requested event")
 		}
 	}()
 }
