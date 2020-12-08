@@ -53,15 +53,18 @@ func saveEvent(w http.ResponseWriter, r *http.Request) {
 
 	// react to different kinds of events
 	switch evt.Kind {
-	case 0:
+	case KindSetMetadata:
 		// delete past set_metadata events from this user
 		db.Exec(`DELETE FROM event WHERE pubkey = $1 AND kind = 1`, evt.PubKey)
-	case 1:
+	case KindTextNote:
 		// do nothing
-	case 2:
-		// delete past recommend_server events that match this one
+	case KindRecommendServer:
+		// delete past recommend_server events equal to this one
 		db.Exec(`DELETE FROM event WHERE pubkey = $1 AND kind = 2 AND content = $2`,
 			evt.PubKey, evt.Content)
+	case KindContactList:
+		// delete past contact lists from this same pubkey
+		db.Exec(`DELETE FROM event WHERE pubkey = $1 AND kind = 3`, evt.PubKey)
 	}
 
 	// insert

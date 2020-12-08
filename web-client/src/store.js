@@ -6,6 +6,7 @@ import {pubkeyFromPrivate, makeRandom32} from './helpers'
 import {db} from './globals'
 import actions from './actions'
 import mutations from './mutations'
+import {KIND_METADATA, KIND_CONTACTLIST} from './constants'
 
 export default createStore({
   plugins: (process.env.NODE_ENV !== 'production'
@@ -57,10 +58,11 @@ export default createStore({
         .filter(({policy}) => policy.indexOf('r') !== -1)
         .map(({host}) => host),
     keyName: state => pubkey =>
-      state.petnames[pubkey] ||
-      (state.metadata.get(pubkey) || {}).name ||
-      (pubkey && pubkey.slice(0, 4) + '…' + pubkey.slice(-4)) ||
-      ''
+      state.petnames[pubkey]
+        ? state.petnames[pubkey].map(name => name.join('.')).join(', ')
+        : (state.metadata.get(pubkey) || {}).name ||
+          (pubkey && pubkey.slice(0, 4) + '…' + pubkey.slice(-4)) ||
+          ''
   },
   mutations,
   actions
@@ -87,17 +89,21 @@ async function init(store) {
           (a, b) => b.split(':')[1] - a.split(':')[1]
         )
       }),
-    db.cachedmetadata.toArray().then(metas => {
-      var metadata = {}
-      metas.forEach(({meta, pubkey}) => {
-        metadata[pubkey] = meta
-      })
-      return metadata
-    }),
+    db.events
+      .where({kind: KIND_METADATA})
+      .toArray()
+      .then(events => {
+        var metadata = {}
+        events.forEach(({content, pubkey}) => {
+          let meta = JSON.parse(content)
+          metadata[pubkey] = meta
+        })
+        return metadata
+      }),
     db.contactlist.toArray().then(contacts => {
       var petnames = {}
       contacts.forEach(({pubkey, name}) => {
-        petnames[pubkey] = name
+        petnames[pubkey] = [[name]]
       })
       return petnames
     })
@@ -110,6 +116,12 @@ async function init(store) {
     metadata: data[3],
     petnames: data[4]
   })
+
+  // process contact lists (nip-02)
+  let events = await db.events.where({kind: KIND_CONTACTLIST}).toArray()
+  for (let i = 0; i < events.length; i++) {
+    store.dispatch('processContactList', events[i])
+  }
 }
 
 function publishStatusLoader(store) {

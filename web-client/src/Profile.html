@@ -12,7 +12,7 @@
       />
     </div>
     <div>
-      <form v-if="editingName !== null" @submit="savePetName">
+      <form v-if="editingName !== null" @submit="setContactName">
         <label>
           Petname:
           <input v-model="editingName" />
@@ -110,9 +110,9 @@
         this.$store.dispatch('publishMetadata', this.editingMetadata)
         this.editingMetadata = null
       },
-      savePetName(e) {
+      setContactName(e) {
         e.preventDefault()
-        this.$store.commit('savePetName', {
+        this.$store.dispatch('setContactName', {
           pubkey: this.$route.params.key,
           name: this.editingName
         })

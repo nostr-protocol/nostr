@@ -1,11 +1,19 @@
 // vuex store actions
 
-import {verifySignature, publishEvent, broadcastEvent} from './helpers'
+import {
+  verifySignature,
+  publishEvent,
+  broadcastEvent,
+  overwriteEvent
+} from './helpers'
 import {
   CONTEXT_NOW,
+  CONTEXT_REQUESTED,
+  CONTEXT_PAST,
   KIND_METADATA,
   KIND_TEXTNOTE,
-  KIND_RECOMMENDSERVER
+  KIND_RECOMMENDSERVER,
+  KIND_CONTACTLIST
 } from './constants'
 import {db} from './globals'
 
@@ -34,7 +42,25 @@ export default {
 
     switch (event.kind) {
       case KIND_METADATA:
-        store.commit('receivedSetMetadata', {event, context})
+        if (context === CONTEXT_REQUESTED) {
+          // just someone we're viewing
+          store.commit('receivedSetMetadata', {event, context})
+        } else if (context === CONTEXT_NOW) {
+          // an update from someone we follow that happened just now
+          store.commit('receivedSetMetadata', {event, context})
+          await db.events
+            .where({kind: KIND_METADATA, pubkey: event.pubkey})
+            .delete()
+          await db.events.put(event)
+        } else if (context === CONTEXT_PAST) {
+          // someone we follow, but an old update -- check first
+          // check first if we don't have a newer one
+          let foundNewer = await overwriteEvent(
+            {kind: KIND_METADATA, pubkey: event.pubkey},
+            event
+          )
+          if (!foundNewer) store.commit('receivedSetMetadata', {event, context})
+        }
         break
       case KIND_TEXTNOTE:
         store.commit('receivedTextNote', {event, context})
@@ -73,6 +99,62 @@ export default {
 
         store.commit('loadedRelays', await db.relays.toArray())
         break
+      case KIND_CONTACTLIST:
+        // if (!(event.pubkey in store.state.petnames)) {
+        //   // we don't know this person, so we won't use their contact list
+        //   return
+        // }
+
+        // check if we have a newest version already
+        let foundNewer = await overwriteEvent(
+          {pubkey: event.pubkey, kind: KIND_CONTACTLIST},
+          event
+        )
+        // process
+        if (!foundNewer) store.dispatch('processContactList', event)
+
+        break
+    }
+  },
+  async setContactName(store, {pubkey, name}) {
+    db.contactlist.put({pubkey, name})
+    store.commit('savePetName', {pubkey, name: [name]})
+
+    // publish our new contact list
+    publishEvent(
+      {
+        pubkey: store.getters.pubKeyHex,
+        created_at: Math.round(new Date().getTime() / 1000),
+        kind: KIND_CONTACTLIST,
+        content: JSON.stringify(
+          (await db.contactlist.toArray()).map(({pubkey, name}) => [
+            pubkey,
+            name
+          ])
+        )
+      },
+      store.state.key,
+      store.getters.writeServers
+    )
+  },
+  processContactList(store, event) {
+    // parse event content
+    var entries = []
+    try {
+      entries = JSON.parse(event.content)
+    } catch (err) {
+      return
+    }
+
+    for (let i = 0; i < entries.length; i++) {
+      let [pubkey, name] = entries[i]
+
+      if (pubkey in store.state.petnames) {
+        // we have our own petname for this key already
+        continue
+      }
+
+      store.commit('savePetName', {pubkey, name: [name, event.pubkey]})
     }
   },
   async addRelay(store, relay) {
