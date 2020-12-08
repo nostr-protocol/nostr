@@ -79,7 +79,7 @@
         var rel = []
         if (this.isFullPage) {
           for (let k of this.$store.state.browsing.keys()) {
-            if (k.slice(0, 9) == 'rel:' + this.id.slice(0, 5)) {
+            if (k.slice(0, 10) == 'rel:' + this.id.slice(0, 5) + ':') {
               rel.push(this.$store.state.browsing.get(k))
             }
           }

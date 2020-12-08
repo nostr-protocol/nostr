@@ -88,7 +88,10 @@ export default {
   receivedTextNote(state, {event: evt, context}) {
     // all notes go to browsing
     state.browsing.set(evt.id.slice(0, 5), evt)
-    state.browsing.set('from:' + evt.pubkey.slice(0, 5), evt)
+    state.browsing.set(
+      'from:' + evt.pubkey.slice(0, 5) + ':' + evt.id.slice(0, 5),
+      evt
+    )
     if (evt.ref && evt.ref.length) {
       state.browsing.set(
         'rel:' + evt.ref.slice(0, 5) + ':' + evt.id.slice(0, 5),

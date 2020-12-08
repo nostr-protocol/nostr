@@ -87,7 +87,10 @@
       notes() {
         var notes = []
         for (let k of this.$store.state.browsing.keys()) {
-          if (k === 'from:' + this.$route.params.key) {
+          if (
+            k.slice(0, 11) ===
+            'from:' + this.$route.params.key.slice(0, 5) + ':'
+          ) {
             let note = this.$store.state.browsing.get(k)
             notes.push(note)
           }
