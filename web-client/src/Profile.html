@@ -1,17 +1,7 @@
 <template>
-  <div>
-    <code>{{ $route.params.key }}</code>
-    <div>
-      <label v-if="editingMetadata">
-        Picture URL:
-        <input v-model="editingMetadata.picture" />
-      </label>
-      <img
-        v-else-if="(metadata.picture || '').length"
-        :src="metadata.picture"
-      />
-    </div>
-    <div>
+  <div class="Profile">
+    <code class="canonical-pubkey">{{ $route.params.key }}</code>
+    <h1>
       <form v-if="editingName !== null" @submit="setContactName">
         <label>
           Petname:
@@ -19,47 +9,47 @@
           (Will be made public)
         </label>
         <button>Save</button>
+        <button @click="editingName = null">Cancel</button>
       </form>
-      <div v-else-if="editingMetadata">
-        <label v-if="editingMetadata">
-          Name:
-          <input v-model="editingMetadata.name" />
-        </label>
-      </div>
       <div v-else>
-        <h1>{{ $store.getters.keyName(this.$route.params.key) }}</h1>
+        <Name :pubkey="this.$route.params.key" expandable />
         <button
           v-if="!myself"
-          @click="editingName = $store.getters.keyName(this.$route.params.key)"
+          @click="editingName = this.$store.getters.ourPetNameFor(this.$route.params.key) || ''"
         >
           Rename
         </button>
       </div>
-    </div>
-    <h2 v-if="$store.getters.keyName(this.$route.params.key) !== metadata.name">
-      {{ metadata.name }}
-    </h2>
+    </h1>
     <div v-if="!myself">
       <button v-if="following" @click="unfollow">Unfollow</button>
       <button v-else @click="follow">Follow</button>
     </div>
-    <article>
-      <span v-if="!editingMetadata">{{ metadata.about }}</span>
-      <label v-else>
+    <article class="metadata">
+      <form v-if="editingMetadata" @submit="saveEditedMetadata">
+        <label>
+          Picture URL:
+          <input v-model="editingMetadata.picture" />
+        </label>
+        <label>
+          Name:
+          <input v-model="editingMetadata.name" />
+        </label>
         About: <textarea v-model="editingMetadata.about"></textarea>
-      </label>
+        <div>
+          <button>Save</button>
+          <button @click="editingMetadata = null">Cancel</button>
+        </div>
+      </form>
+      <div v-else>
+        <img v-if="(metadata.picture || '').length" :src="metadata.picture" />
+        <h2>{{ metadata.name }}</h2>
+        <div>{{ metadata.about }}</div>
+        <button v-if="myself" @click="editingMetadata = {...metadata}">
+          Edit
+        </button>
+      </div>
     </article>
-    <div>
-      <button
-        v-if="myself && !editingMetadata"
-        @click="editingMetadata = {...metadata}"
-      >
-        Edit
-      </button>
-      <button v-else-if="editingMetadata" @click="saveEditedMetadata">
-        Save
-      </button>
-    </div>
     <List :notes="notes" />
   </div>
 </template>
@@ -128,10 +118,20 @@
   }
 </script>
 
-<style module>
-  a {
-    cursor: pointer;
-    color: blue;
+<style>
+  .Profile {
+  }
+  .Profile .metadata {
+    margin: 5px;
+    padding: 5px;
+    border: dotted 2px orange;
+  }
+  .Profile .canonical-pubkey {
+    display: block;
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin: 26px;
     text-decoration: underline;
+    width: 300px;
   }
 </style>

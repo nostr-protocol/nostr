@@ -8,6 +8,7 @@ import Profile from './Profile.html'
 import Note from './Note.html'
 import List from './List.html'
 import Publish from './Publish.html'
+import Name from './Name.html'
 
 import store from './store'
 
@@ -32,4 +33,5 @@ app.component('Profile', Profile)
 app.component('Note', Note)
 app.component('List', List)
 app.component('Publish', Publish)
+app.component('Name', Name)
 app.mount('#app')

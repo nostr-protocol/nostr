@@ -23,8 +23,8 @@
       {{ relay.host }}
       <span v-if="relay.recommender"
         >recommended by:
-        <a :href="'#/' + relay.recommender"
-          >{{ $store.getters.keyName(relay.recommender) }}</a
+        <a :href="'#/' + relay.recommender">
+          <Name :pubkey="relay.recommender" /> </a
         >&nbsp;</span
       >
       <button @click="e => unignoreRelay(e, relay.host)">Unignore</button>
@@ -54,8 +54,8 @@
           <button @click="e => ignoreRelay(e, relay.host)">Ignore</button>
           <span v-if="relay.recommender"
             >recommended by:
-            <a :href="'#/' + relay.recommender"
-              >{{ $store.getters.keyName(relay.recommender) }}</a
+            <a :href="'#/' + relay.recommender">
+              <Name :pubkey="relay.recommender" /> </a
             >&nbsp;</span
           >
         </span>

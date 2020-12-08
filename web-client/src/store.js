@@ -57,12 +57,13 @@ export default createStore({
       state.relays
         .filter(({policy}) => policy.indexOf('r') !== -1)
         .map(({host}) => host),
-    keyName: state => pubkey =>
-      state.petnames[pubkey]
-        ? state.petnames[pubkey].map(name => name.join('.')).join(', ')
-        : (state.metadata.get(pubkey) || {}).name ||
-          (pubkey && pubkey.slice(0, 4) + '…' + pubkey.slice(-4)) ||
-          ''
+    ourPetNameFor: state => pubkey => {
+      if (state.petnames[pubkey]) {
+        let single = state.petnames[pubkey].find(name => name.length === 1)
+        if (single) return single[0]
+      }
+      return null
+    }
   },
   mutations,
   actions

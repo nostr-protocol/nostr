@@ -4,7 +4,9 @@
       <Note :note="reference" />
     </div>
     <header class="pubkey">
-      <a :href="'#/' + pubkey">{{ $store.getters.keyName(pubkey) }}</a>
+      <a :href="'#/' + pubkey">
+        <Name :pubkey="pubkey" />
+      </a>
     </header>
     <p>{{ content }}</p>
     <footer>
