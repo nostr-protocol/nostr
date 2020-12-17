@@ -4,7 +4,9 @@
     <h2>Following</h2>
     <ul>
       <li v-for="key in $store.state.following">
-        <a :href="'#/' + key">{{ key }}</a>
+        <a :href="'#/' + key">
+          <Name :pubkey="key" />
+        </a>
       </li>
     </ul>
   </div>

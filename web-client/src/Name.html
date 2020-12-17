@@ -29,6 +29,7 @@
       v-if="petnames.length === 0 && !selfGiven"
       >{{ abbr }}</span
     >
+    <span v-if="$store.getters.pubKeyHex === pubkey"> (yourself)</span>
   </div>
 </template>
 

@@ -193,47 +193,57 @@ function listener(store) {
 
   async function listenToRelay(host) {
     if (store.state.following.length === 0) return
-
     if (host.length && host[host.length - 1] === '/') host = host.slice(0, -1)
-    let es = new EventSource(
-      host + '/listen_events?session=' + store.state.session
-    )
-    ess.set(host, es)
 
-    es.onerror = err => {
-      console.log(`${host}/listen_events error`, err)
-      es.close()
-      ess.delete(host)
-    }
-    es.onopen = () => {
-      store.commit('gotEventSource')
-    }
+    try {
+      let es = new EventSource(
+        host + '/listen_events?session=' + store.state.session
+      )
+      ess.set(host, es)
 
-    // add initial keys
-    await window.fetch(host + '/request_watch?session=' + store.state.session, {
-      method: 'POST',
-      headers: {'content-type': 'application/json'},
-      body: JSON.stringify({keys: store.state.following})
-    })
+      es.onerror = err => {
+        console.log(`${host}/listen_events error`, err)
+        es.close()
+        ess.delete(host)
+      }
+      es.onopen = () => {
+        store.commit('gotEventSource')
+      }
 
-    // handle anything
-    es.addEventListener('notice', e => {
-      console.log(e.data)
-    })
-    ;['p', 'n', 'r'].forEach(context => {
-      es.addEventListener(context, e => {
-        store.dispatch('receivedEvent', {
-          event: JSON.parse(e.data),
-          context
+      // add initial keys
+      await window.fetch(
+        host + '/request_watch?session=' + store.state.session,
+        {
+          method: 'POST',
+          headers: {'content-type': 'application/json'},
+          body: JSON.stringify({keys: store.state.following})
+        }
+      )
+
+      // handle anything
+      es.addEventListener('notice', e => {
+        console.log(e.data)
+      })
+      ;['p', 'n', 'r'].forEach(context => {
+        es.addEventListener(context, e => {
+          store.dispatch('receivedEvent', {
+            event: JSON.parse(e.data),
+            context
+          })
         })
       })
-    })
 
-    // request initial feed
-    await window.fetch(host + '/request_feed?session=' + store.state.session, {
-      method: 'POST',
-      headers: {'content-type': 'application/json'},
-      body: JSON.stringify({limit: 100})
-    })
+      // request initial feed
+      await window.fetch(
+        host + '/request_feed?session=' + store.state.session,
+        {
+          method: 'POST',
+          headers: {'content-type': 'application/json'},
+          body: JSON.stringify({limit: 100})
+        }
+      )
+    } catch (err) {
+      console.log('error listening to relay:', host)
+    }
   }
 }
