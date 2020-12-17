@@ -50,10 +50,12 @@ func main() {
 	router.Path("/query_users").Methods("GET").HandlerFunc(queryUsers)
 
 	srv := &http.Server{
-		Handler:      cors.Default().Handler(router),
-		Addr:         s.Host + ":" + s.Port,
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+		Handler:           cors.Default().Handler(router),
+		Addr:              s.Host + ":" + s.Port,
+		WriteTimeout:      2 * time.Second,
+		ReadTimeout:       2 * time.Second,
+		IdleTimeout:       30 * time.Second,
+		ReadHeaderTimeout: 2 * time.Second,
 	}
 	log.Debug().Str("addr", srv.Addr).Msg("listening")
 	srv.ListenAndServe()

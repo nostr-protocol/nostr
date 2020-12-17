@@ -26,6 +26,8 @@ func saveEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	r.Body = http.MaxBytesReader(w, r.Body, 50000)
+
 	w.Header().Set("content-type", "application/json")
 
 	var evt Event
@@ -33,6 +35,12 @@ func saveEvent(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(400)
 		log.Warn().Err(err).Msg("couldn't decode body")
+		return
+	}
+
+	// disallow large contents
+	if len(evt.Content) > 1000 {
+		log.Warn().Err(err).Msg("event content too large")
 		return
 	}
 
