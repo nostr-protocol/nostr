@@ -12,5 +12,6 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.4
 	github.com/rs/cors v1.7.0
 	github.com/rs/zerolog v1.20.0
+	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 	gopkg.in/antage/eventsource.v1 v1.0.0-20150318155416-803f4c5af225
 )

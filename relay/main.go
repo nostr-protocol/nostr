@@ -23,8 +23,8 @@ type Settings struct {
 var s Settings
 var err error
 var db *sqlx.DB
-var router = mux.NewRouter()
 var log = zerolog.New(os.Stderr).Output(zerolog.ConsoleWriter{Out: os.Stderr})
+var router = mux.NewRouter()
 
 func main() {
 	err = envconfig.Process("", &s)

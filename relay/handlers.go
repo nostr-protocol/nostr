@@ -9,13 +9,23 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
+
+	"golang.org/x/time/rate"
 )
+
+var ratelimiter = rate.NewLimiter(rate.Every(time.Second*40), 2)
 
 type ErrorResponse struct {
 	Error error `json:"error"`
 }
 
 func saveEvent(w http.ResponseWriter, r *http.Request) {
+	if !ratelimiter.Allow() {
+		w.WriteHeader(503)
+		return
+	}
+
 	w.Header().Set("content-type", "application/json")
 
 	var evt Event
