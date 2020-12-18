@@ -44,7 +44,7 @@ It doesn't rely on any trusted central server, hence it is resilient; it is base
 - Clients fetch data from relays of their choice and publish data to other relays of their choice. A relay doesn't talk to another relay, only directly to users.
 - For example, to "follow" someone a user just instructs their client to query the relays it knows for posts from that public key.
 - On startup, a client queries data from all relays it knows for all users it follows (for example, all updates from the last day), then displays that data to the user chronologically.
-- A "post" can contain any kind of structured data, but the most used ones are going to find their wway into the standard so all clients and relays can handle them seamlessly.
+- A "post" can contain any kind of structured data, but the most used ones are going to find their way into the standard so all clients and relays can handle them seamlessly.
 
 ## How does it solve the problems the networks above can't?
 
