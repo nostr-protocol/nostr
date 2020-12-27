@@ -85,20 +85,17 @@ It doesn't rely on any trusted central server, hence it is resilient; it is base
 ### Checklist of good things and problems solved
 
 - [x] The protocol is very simple
-- [ ] The basis of the protocol are fully specified
+- [x] The basis of the protocol are fully specified
 - [x] There are relay and client prototypes:
-  - Web-based client: https://nostr-client.bigsun.xyz/
-  - Relays: `https://nostr-relay.bigsun.xyz`, `https://vstonks.bigsun.xyz`
+  - Web-based client: https://nostr-client.netlify.app/
+  - Relays: `https://nostr-relay.bigsun.xyz`, `https://nostr.coinos.io`
 - [ ] The system is being used in the wild
 - [ ] The client prototype looks good
-- [x] The protocol has a good name
 - [ ] Alternative implementations of client and relay exist
-- [ ] A way to upload old notes to a new server that doesn't trigger date mismatch error
 - [ ] A way for notes to prove themselves they existed at a certain date to clients (OpenTimestamps?)
 - [ ] A way to do key revocation?
 - [ ] A way to use pubkey aliases based on DNS names?
-- [ ] A way to use pubkey aliases based on petnames inside the protocol?
-- [ ] A way to use pubkey aliases based on a new namecoin-like name ledger that exists on a [blindly-merged-mined blockchain parallel to Bitcoin](https://fiatjaf.alhur.es/a675823c.html)?
+- [x] A way to use pubkey aliases based on petnames inside the protocol?
 
 ## Protocol specification
 
