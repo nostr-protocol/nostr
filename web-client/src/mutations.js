@@ -2,7 +2,7 @@
 
 import {pubkeyFromPrivate} from './helpers'
 import {db} from './globals'
-import {CONTEXT_REQUESTED, CONTEXT_NOW, CONTEXT_PAST} from './constants'
+import {CONTEXT_REQUESTED} from './constants'
 
 export default {
   setInit(state, {relays, following, home, metadata, petnames}) {

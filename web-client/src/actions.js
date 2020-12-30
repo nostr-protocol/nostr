@@ -63,6 +63,10 @@ export default {
         }
         break
       case KIND_TEXTNOTE:
+        if (event.pubkey === store.getters.pubKeyHex) {
+          db.mynotes.put(event)
+        }
+
         store.commit('receivedTextNote', {event, context})
         break
       case KIND_RECOMMENDSERVER:
