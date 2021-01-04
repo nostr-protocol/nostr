@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/hex"
-	"errors"
 	"fmt"
 
 	"github.com/fiatjaf/schnorr"
@@ -25,12 +24,45 @@ type Event struct {
 
 	Kind uint8 `db:"kind" json:"kind"`
 
-	Ref     string `db:"ref" json:"ref"` // the id of another event, optional
+	Tags    []Tag  `db:"tag" json:"tags"`
 	Content string `db:"content" json:"content"`
 	Sig     string `db:"sig" json:"sig"`
 
 	// extra
 	Rel int `db:"rel" json:"rel,omitempty"`
+}
+
+type Tag interface {
+	Identifier() byte
+	Serialized() []byte
+}
+
+type EventTag struct {
+	EventID          string
+	RecommendedRelay string
+}
+
+func (et EventTag) Identifier() byte { return 'e' }
+func (et EventTag) Serialized() []byte {
+	b := bytes.Buffer{}
+	b.WriteByte(et.Identifier())
+	b.Write([]byte(et.EventID))
+	b.Write([]byte(et.RecommendedRelay))
+	return b.Bytes()
+}
+
+type PubKeyTag struct {
+	PubKey           string
+	RecommendedRelay string
+}
+
+func (et PubKeyTag) Identifier() byte { return 'p' }
+func (et PubKeyTag) Serialized() []byte {
+	b := bytes.Buffer{}
+	b.WriteByte(et.Identifier())
+	b.Write([]byte(et.PubKey))
+	b.Write([]byte(et.RecommendedRelay))
+	return b.Bytes()
 }
 
 // Serialize outputs a byte array that can be hashed/signed to identify/authenticate
@@ -67,16 +99,9 @@ func (evt *Event) Serialize() ([]byte, error) {
 		return nil, err
 	}
 
-	// ref
-	if len(evt.Ref) != 0 && len(evt.Ref) != 64 {
-		return nil, errors.New("reference must be either blank or 32 bytes")
-	}
-	if evt.Ref != "" {
-		reference, err := hex.DecodeString(evt.Ref)
-		if err != nil {
-			return nil, errors.New("reference is an invalid hex string")
-		}
-		if _, err = b.Write(reference); err != nil {
+	// tags
+	for _, tag := range evt.Tags {
+		if _, err := b.Write(tag.Serialized()); err != nil {
 			return nil, err
 		}
 	}
