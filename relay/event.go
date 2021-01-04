@@ -1,9 +1,8 @@
 package main
 
 import (
-	"bytes"
-	"encoding/binary"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 
 	"github.com/fiatjaf/schnorr"
@@ -27,99 +26,63 @@ type Event struct {
 	Tags    []Tag  `db:"tag" json:"tags"`
 	Content string `db:"content" json:"content"`
 	Sig     string `db:"sig" json:"sig"`
-
-	// extra
-	Rel int `db:"rel" json:"rel,omitempty"`
 }
 
-type Tag interface {
-	Identifier() byte
-	Serialized() []byte
-}
-
-type EventTag struct {
-	EventID          string
-	RecommendedRelay string
-}
-
-func (et EventTag) Identifier() byte { return 'e' }
-func (et EventTag) Serialized() []byte {
-	b := bytes.Buffer{}
-	b.WriteByte(et.Identifier())
-	b.Write([]byte(et.EventID))
-	b.Write([]byte(et.RecommendedRelay))
-	return b.Bytes()
-}
-
-type PubKeyTag struct {
-	PubKey           string
-	RecommendedRelay string
-}
-
-func (et PubKeyTag) Identifier() byte { return 'p' }
-func (et PubKeyTag) Serialized() []byte {
-	b := bytes.Buffer{}
-	b.WriteByte(et.Identifier())
-	b.Write([]byte(et.PubKey))
-	b.Write([]byte(et.RecommendedRelay))
-	return b.Bytes()
-}
+type Tag []interface{}
 
 // Serialize outputs a byte array that can be hashed/signed to identify/authenticate
-// this event. An error will be returned if anything is malformed.
-func (evt *Event) Serialize() ([]byte, error) {
-	b := bytes.Buffer{}
+func (evt *Event) Serialize() []byte {
+	// the serialization process is just putting everything into a JSON array
+	// so the order is kept
+	arr := make([]interface{}, 6)
 
-	// version: 0 (only because if more fields are added later the id will not match)
-	b.Write([]byte{0})
+	// version: 0
+	arr[0] = 0
 
 	// pubkey
-	pubkeyb, err := hex.DecodeString(evt.PubKey)
-	if err != nil {
-		return nil, err
-	}
-	if len(pubkeyb) != 32 {
-		return nil, fmt.Errorf("pubkey must be 32 bytes, not %d", len(pubkeyb))
-	}
-	if _, err = b.Write(pubkeyb); err != nil {
-		return nil, err
-	}
+	arr[1] = evt.PubKey
 
 	// created_at
-	var timeb [4]byte
-	binary.BigEndian.PutUint32(timeb[:], evt.CreatedAt)
-	if _, err := b.Write(timeb[:]); err != nil {
-		return nil, err
-	}
+	arr[2] = int64(evt.CreatedAt)
 
 	// kind
-	var kindb [1]byte
-	kindb[0] = evt.Kind
-	if _, err := b.Write(kindb[:]); err != nil {
-		return nil, err
-	}
+	arr[3] = int64(evt.Kind)
 
 	// tags
-	for _, tag := range evt.Tags {
-		if _, err := b.Write(tag.Serialized()); err != nil {
-			return nil, err
-		}
-	}
+	arr[4] = evt.Tags
 
 	// content
-	if _, err = b.Write([]byte(evt.Content)); err != nil {
-		return nil, err
-	}
+	arr[5] = evt.Content
 
-	return b.Bytes(), nil
+	serialized, _ := json.Marshal(arr)
+	return serialized
 }
 
 // CheckSignature checks if the signature is valid for the id
 // (which is a hash of the serialized event content).
 // returns an error if the signature itself is invalid.
 func (evt Event) CheckSignature() (bool, error) {
-	// validity of these is checked by Serialize(), which should be called first
-	pubkey, _ := hex.DecodeString(evt.PubKey)
+	// read and check pubkey
+	pubkeyb, err := hex.DecodeString(evt.PubKey)
+	if err != nil {
+		return false, err
+	}
+	if len(pubkeyb) != 32 {
+		return false, fmt.Errorf("pubkey must be 32 bytes, not %d", len(pubkeyb))
+	}
+
+	// check tags
+	for _, tag := range evt.Tags {
+		for _, item := range tag {
+			switch item.(type) {
+			case string, int64, float64, int, bool:
+				// fine
+			default:
+				// not fine
+				return false, fmt.Errorf("tag contains an invalid value %v", item)
+			}
+		}
+	}
 
 	hash, _ := hex.DecodeString(evt.ID)
 	if len(hash) != 32 {
@@ -136,17 +99,13 @@ func (evt Event) CheckSignature() (bool, error) {
 	}
 
 	var p [32]byte
-	for i, b := range pubkey {
-		p[i] = b
-	}
+	copy(p[:], pubkeyb)
+
 	var h [32]byte
-	for i, b := range hash {
-		h[i] = b
-	}
+	copy(h[:], hash)
+
 	var s [64]byte
-	for i, b := range sig {
-		s[i] = b
-	}
+	copy(s[:], sig)
 
 	return schnorr.Verify(p, h, s)
 }

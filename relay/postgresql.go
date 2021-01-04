@@ -19,14 +19,13 @@ CREATE TABLE event (
   pubkey text NOT NULL,
   created_at integer NOT NULL,
   kind integer NOT NULL,
-  ref text NOT NULL,
+  tags jsonb NOT NULL,
   content text NOT NULL,
   sig text NOT NULL
 );
 
 CREATE UNIQUE INDEX ididx ON event (id);
 CREATE INDEX pubkeytimeidx ON event (pubkey, created_at);
-CREATE INDEX idxref ON event (ref);
     `)
 	log.Print(err)
 	return db, nil
