@@ -34,6 +34,7 @@ var ratelimiter = rate.NewLimiter(rate.Every(time.Second*40), 2)
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
 func handleWebsocket(w http.ResponseWriter, r *http.Request) {
@@ -72,20 +73,29 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 			case strings.HasPrefix(text, "{"):
 				// it's a new event
 				err = saveEvent(message)
+
 			case strings.HasPrefix(text, "sub-key:"):
 				watchPubKey(strings.TrimSpace(text[8:]), conn)
+
 			case strings.HasPrefix(text, "unsub-key:"):
 				unwatchPubKey(strings.TrimSpace(text[10:]), conn)
+
 			case strings.HasPrefix(text, "req-feed:"):
 				err = requestFeed(message[len([]byte("req-feed:")):], conn)
+
 			case strings.HasPrefix(text, "req-event:"):
 				err = requestEvent(message[len([]byte("req-event")):], conn)
+
 			case strings.HasPrefix(text, "req-key:"):
-				err = requestKey(message[len([]byte("req-event")):], conn)
+				err = requestKey(message[len([]byte("req-key")):], conn)
 			}
 
 			if err != nil {
-				// TODO send an error message
+				errj, _ := json.Marshal([]interface{}{
+					"notice",
+					err.Error(),
+				})
+				conn.WriteMessage(websocket.TextMessage, errj)
 				continue
 			}
 		}
