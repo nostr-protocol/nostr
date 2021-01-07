@@ -24,7 +24,7 @@ It doesn't rely on any trusted central server, hence it is resilient; it is base
 - User identities are attached to domain names controlled by third-parties;
 - Server owners can ban you, just like Twitter;
 - Migration between servers is an afterthought and can only be accomplished if servers cooperate, doesn't work in an adversarial environment, all followers are lost;
-- There's no clear incentive to run servers, therefore these tend to be run by enthusiasts and people who want to have their name attached by a cool domain, and then users are subject to the despotism of a single person, which is often worst than that of a big company like Twitter, and they can't migrate out;
+- There's no clear incentive to run servers, therefore these tend to be run by enthusiasts and people who want to have their name attached by a cool domain, and then users are subject to the despotism of a single person, which is often worse than that of a big company like Twitter, and they can't migrate out;
 - Since servers tend to be run amateurishly, they are often abandoned after a while -- which is effectively the same as banning everybody;
 - It doesn't make sense to have a ton of servers if updates from every server will have to be painfully pushed (and saved!) to a ton of other servers, this point is exacerbated by the fact that servers tend to exist in huge numbers, therefore more data has to be passed to more places more times;
 - For the specific example of video sharing, ActivityPub enthusiasts realized it would be completely impossible to transmit video from server to server the way text notes are, so they decided to keep the video hosted only from the single instance where it was posted to, which is similar to the Nostr approach.
