@@ -11,19 +11,24 @@ const hardcodedRelays = [
     policy: 'rw'
   }
 ]
-db.relays
-  .bulkPut(hardcodedRelays)
-  .then(() => db.relays.toArray())
-  .then(relays => {
-    relays.forEach(({host, policy}) => {
-      let relay = pool.addRelay(host, parsePolicy(policy))
-      setTimeout(() => {
-        relay.reqFeed()
-      }, 1)
-    })
-  })
 
 export function relayStorePlugin(store) {
+  db.relays
+    .bulkPut(hardcodedRelays)
+    .then(() => db.relays.toArray())
+    .then(relays => {
+      relays.forEach(({host, policy}) => {
+        if (policy.indexOf('i') !== -1) {
+          store.commit('ignoreRelay', host)
+        }
+
+        let relay = pool.addRelay(host, parsePolicy(policy))
+        setTimeout(() => {
+          relay.reqFeed()
+        }, 1)
+      })
+    })
+
   store.subscribe(mutation => {
     switch (mutation.type) {
       case 'setInit':

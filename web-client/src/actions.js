@@ -1,7 +1,7 @@
 // vuex store actions
 
 import {verifySignature} from 'nostr-tools'
-import {overwriteEvent} from './helpers'
+import {parsePolicy, overwriteEvent} from './helpers'
 import {
   CONTEXT_NOW,
   CONTEXT_REQUESTED,
@@ -155,12 +155,21 @@ export default {
   },
   async addRelay(store, relay) {
     await db.relays.put(relay)
-    store.commit('loadedRelays', await db.relays.toArray())
+    pool.addRelay(relay.host, relay.policy)
   },
   async updateRelay(store, {key, host, policy}) {
     let relay = {host, policy}
     await db.relays.update(key, relay)
-    store.commit('loadedRelays', await db.relays.toArray())
+    pool.removeRelay(host)
+
+    if (policy.length && policy.indexOf('i') !== 'i') {
+      pool.addRelay(host, parsePolicy(policy))
+    }
+
+    store.commit('unignoreRelay', host)
+    if (policy.indexOf('i') !== -1) {
+      store.commit('ignoreRelay', host)
+    }
   },
   async publishMetadata(store, meta) {
     let event = await pool.publish({

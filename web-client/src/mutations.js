@@ -100,7 +100,12 @@ export default {
       state.home.set(evt.id + ':' + evt.created_at, evt)
     }
   },
-  saveMyOwnNote() {},
+  ignoreRelay(state, host) {
+    state.ignoredRelays[host] = true
+  },
+  unignoreRelay(state, host) {
+    delete state.ignoredRelays[host]
+  },
   updatePublishStatus(state, {id, time, relay, status}) {
     state.publishStatus = {
       ...state.publishStatus,

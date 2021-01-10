@@ -29,7 +29,8 @@ export default createStore({
       metadata: new LRU({maxSize: 100}),
       browsing: new LRU({maxSize: 500}),
       publishStatus: {},
-      petnames: {}
+      petnames: {},
+      ignoredRelays: {},
     }
   },
   getters: {
