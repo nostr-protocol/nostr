@@ -44,6 +44,8 @@
 <script>
   import prettydate from 'pretty-date'
 
+  import {pool} from './relay'
+
   export default {
     props: ['note'],
     data() {
@@ -103,12 +105,12 @@
       },
       republish(e) {
         e.preventDefault()
-        this.$store.dispatch('broadcastEvent', this.note)
+        pool.publish(this.note)
       }
     },
     mounted() {
       if (!this.note) {
-        this.$store.dispatch('browseEvent', this.$route.params.id)
+        pool.reqEvent({id: this.$route.params.id})
       }
     }
   }

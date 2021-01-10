@@ -10,6 +10,8 @@
 </template>
 
 <script>
+  import {pool} from './relay'
+
   export default {
     props: ['reference'],
     data() {
@@ -20,9 +22,10 @@
     },
     computed: {
       writeServersList() {
-        return JSON.stringify(this.$store.getters.writeServers)
+        return Object.keys(pool.relays)
+          .filter(url => pool.relays[url].policy.write)
+          .join(' ')
           .replace(/"/g, '')
-          .replace(/,/g, ' ')
       }
     },
     methods: {

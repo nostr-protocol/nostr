@@ -6,6 +6,7 @@ import css from 'rollup-plugin-css-only'
 import inject from '@rollup/plugin-inject'
 import injectProcessEnv from 'rollup-plugin-inject-process-env'
 import json from '@rollup/plugin-json'
+import nodePolyfills from 'rollup-plugin-node-polyfills'
 
 const production = !!process.env.PRODUCTION
 
@@ -18,6 +19,8 @@ export default {
     file: 'static/bundle.js'
   },
   plugins: [
+    nodePolyfills(),
+
     css({output: 'static/bundle.css'}),
 
     vuePlugin({

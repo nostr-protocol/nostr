@@ -55,6 +55,8 @@
 </template>
 
 <script>
+  import {pool} from './relay'
+
   export default {
     data() {
       return {
@@ -113,7 +115,7 @@
       }
     },
     mounted() {
-      this.$store.dispatch('browseProfile', this.$route.params.key)
+      pool.reqKey({key: this.$route.params.key})
     }
   }
 </script>

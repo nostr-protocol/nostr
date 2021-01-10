@@ -7,7 +7,7 @@ db.version(1).stores({
   relays: 'host',
   following: 'pubkey',
   mynotes: 'id, kind, created_at',
-  publishlog: '[id+host]',
+  publishlog: '[id+relay]',
 
   // any special events from other people we may want to use later
   // like metadata or contactlists from others, for example
@@ -18,11 +18,9 @@ db.version(1).stores({
   contactlist: 'pubkey'
 })
 
-if (localStorage.getItem('deleted') < '4') {
+if (localStorage.getItem('deleted') < '5') {
   db.delete().then(() => {
-    localStorage.setItem('deleted', '4')
+    localStorage.setItem('deleted', '5')
     location.reload()
   })
 }
-
-window.db = db

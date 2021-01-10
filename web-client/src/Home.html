@@ -11,7 +11,7 @@
     </ul>
   </div>
   <Publish />
-  <p>Data providers: {{ readServersList }}</p>
+  <p>Relays: {{ relays }}</p>
   <div v-if="$store.state.home.size === 0">
     <p>Didn't find any notes to show.</p>
   </div>
@@ -19,12 +19,12 @@
 </template>
 
 <script>
+  import {pool} from './relay'
+
   export default {
     computed: {
-      readServersList() {
-        return JSON.stringify(this.$store.getters.readServers)
-          .replace(/"/g, '')
-          .replace(/,/g, ' ')
+      relays() {
+        return Object.keys(pool.relays)
       }
     }
   }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -84,12 +85,6 @@ func (evt Event) CheckSignature() (bool, error) {
 		}
 	}
 
-	hash, _ := hex.DecodeString(evt.ID)
-	if len(hash) != 32 {
-		return false, fmt.Errorf("invalid event id/hash when checking signature (%s)",
-			evt.ID)
-	}
-
 	sig, err := hex.DecodeString(evt.Sig)
 	if err != nil {
 		return false, fmt.Errorf("signature is invalid hex: %w", err)
@@ -101,11 +96,10 @@ func (evt Event) CheckSignature() (bool, error) {
 	var p [32]byte
 	copy(p[:], pubkeyb)
 
-	var h [32]byte
-	copy(h[:], hash)
-
 	var s [64]byte
 	copy(s[:], sig)
+
+	h := sha256.Sum256(evt.Serialize())
 
 	return schnorr.Verify(p, h, s)
 }

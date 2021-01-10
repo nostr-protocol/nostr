@@ -1,15 +1,14 @@
 // vuex store mutations
 
-import {pubkeyFromPrivate} from './helpers'
-import {db} from './globals'
+import {getPublicKey} from 'nostr-tools'
+import {db} from './db'
 import {CONTEXT_REQUESTED} from './constants'
 
 export default {
-  setInit(state, {relays, following, home, metadata, petnames}) {
-    state.relays = relays
+  setInit(state, {following, home, metadata, petnames}) {
     state.following = following.concat(
       // always be following thyself
-      pubkeyFromPrivate(state.key)
+      getPublicKey(state.key)
     )
     state.home = home
     for (let key in metadata) {
@@ -22,9 +21,6 @@ export default {
   },
   setSecretKey(state, newKey) {
     state.key = newKey
-  },
-  loadedRelays(state, relays) {
-    state.relays = relays
   },
   follow(state, key) {
     state.following.push(key)
@@ -105,10 +101,10 @@ export default {
     }
   },
   saveMyOwnNote() {},
-  updatePublishStatus(state, {id, time, host, status}) {
+  updatePublishStatus(state, {id, time, relay, status}) {
     state.publishStatus = {
       ...state.publishStatus,
-      [id]: {...(state.publishStatus[id] || {}), [host]: {time, status}}
+      [id]: {...(state.publishStatus[id] || {}), [relay]: {time, status}}
     }
   }
 }

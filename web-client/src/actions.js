@@ -1,11 +1,7 @@
 // vuex store actions
 
-import {
-  verifySignature,
-  publishEvent,
-  broadcastEvent,
-  overwriteEvent
-} from './helpers'
+import {verifySignature} from 'nostr-tools'
+import {overwriteEvent} from './helpers'
 import {
   CONTEXT_NOW,
   CONTEXT_REQUESTED,
@@ -15,7 +11,8 @@ import {
   KIND_RECOMMENDSERVER,
   KIND_CONTACTLIST
 } from './constants'
-import {db} from './globals'
+import {db} from './db'
+import {pool} from './relay'
 
 export default {
   async importSecretKey(store, newKey) {
@@ -28,6 +25,8 @@ export default {
       'discardedSecretKeys',
       JSON.stringify(discardedSecretKeys)
     )
+
+    pool.setPrivateKey(newKey)
 
     // save new secret key
     localStorage.setItem('key', newKey)
@@ -125,21 +124,14 @@ export default {
     store.commit('savePetName', {pubkey, name: [name]})
 
     // publish our new contact list
-    publishEvent(
-      {
-        pubkey: store.getters.pubKeyHex,
-        created_at: Math.round(new Date().getTime() / 1000),
-        kind: KIND_CONTACTLIST,
-        content: JSON.stringify(
-          (await db.contactlist.toArray()).map(({pubkey, name}) => [
-            pubkey,
-            name
-          ])
-        )
-      },
-      store.state.key,
-      store.getters.writeServers
-    )
+    pool.publish({
+      pubkey: store.getters.pubKeyHex,
+      created_at: Math.round(new Date().getTime() / 1000),
+      kind: KIND_CONTACTLIST,
+      content: JSON.stringify(
+        (await db.contactlist.toArray()).map(({pubkey, name}) => [pubkey, name])
+      )
+    })
   },
   processContactList(store, event) {
     // parse event content
@@ -170,71 +162,32 @@ export default {
     await db.relays.update(key, relay)
     store.commit('loadedRelays', await db.relays.toArray())
   },
-  async browseProfile(store, pubkey) {
-    await store.state.haveEventSource
-    for (let i = 0; i < store.getters.readServers.length; i++) {
-      let host = store.getters.readServers[i]
-      window.fetch(host + '/request_user?session=' + store.state.session, {
-        method: 'POST',
-        headers: {'content-type': 'application/json'},
-        body: JSON.stringify({pubkey})
-      })
-    }
-  },
-  async browseEvent(store, id) {
-    await store.state.haveEventSource
-    for (let i = 0; i < store.getters.readServers.length; i++) {
-      let host = store.getters.readServers[i]
-      window.fetch(host + '/request_event?session=' + store.state.session, {
-        method: 'POST',
-        headers: {'content-type': 'application/json'},
-        body: JSON.stringify({id})
-      })
-    }
-  },
-  async broadcastEvent(store, event) {
-    await broadcastEvent(event, store.getters.writeServers)
-  },
   async publishMetadata(store, meta) {
-    let event = await publishEvent(
-      {
-        pubkey: store.getters.pubKeyHex,
-        created_at: Math.round(new Date().getTime() / 1000),
-        kind: KIND_METADATA,
-        content: JSON.stringify(meta)
-      },
-      store.state.key,
-      store.getters.writeServers
-    )
-
+    let event = await pool.publish({
+      pubkey: store.getters.pubKeyHex,
+      created_at: Math.round(new Date().getTime() / 1000),
+      kind: KIND_METADATA,
+      content: JSON.stringify(meta)
+    })
     store.commit('receivedSetMetadata', {event, context: CONTEXT_NOW})
   },
   async publishNote(store, {text, reference}) {
-    let event = await publishEvent(
-      {
-        pubkey: store.getters.pubKeyHex,
-        created_at: Math.round(new Date().getTime() / 1000),
-        ref: reference,
-        kind: KIND_TEXTNOTE,
-        content: text.trim()
-      },
-      store.state.key,
-      store.getters.writeServers
-    )
-
+    let event = await pool.publish({
+      pubkey: store.getters.pubKeyHex,
+      created_at: Math.round(new Date().getTime() / 1000),
+      tags: reference ? [['e', reference, '']] : [],
+      kind: KIND_TEXTNOTE,
+      content: text.trim()
+    })
     db.mynotes.put(event)
     store.commit('receivedTextNote', {event, context: CONTEXT_NOW})
   },
   async recommendRelay(store, host) {
-    publishEvent(
-      {
-        pubkey: store.getters.pubKeyHex,
-        created_at: Math.round(new Date().getTime() / 1000),
-        kind: KIND_RECOMMENDSERVER,
-        content: host
-      },
-      store.state.key,
-      store.getters.writeServers
-    )
+    pool.publish({
+      pubkey: store.getters.pubKeyHex,
+      created_at: Math.round(new Date().getTime() / 1000),
+      kind: KIND_RECOMMENDSERVER,
+      content: host
+    })
   }
 }

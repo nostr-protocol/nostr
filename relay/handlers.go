@@ -23,7 +23,7 @@ const (
 	pongWait = 60 * time.Second
 
 	// Send pings to peer with this period. Must be less than pongWait.
-	pingPeriod = (pongWait * 9) / 10
+	pingPeriod = pongWait / 2
 
 	// Maximum message size allowed from peer.
 	maxMessageSize = 512000
@@ -108,6 +108,17 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 			ticker.Stop()
 			conn.Close()
 		}()
+
+		for {
+			select {
+			case <-ticker.C:
+				conn.SetWriteDeadline(time.Now().Add(writeWait))
+				if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+					log.Warn().Err(err).Msg("error writing ping, closing websocket")
+					return
+				}
+			}
+		}
 	}()
 }
 
@@ -238,12 +249,12 @@ func requestFeed(body []byte, conn *websocket.Conn) error {
 
 func requestKey(body []byte, conn *websocket.Conn) error {
 	var data struct {
-		PubKey string `json:"pubkey"`
+		Key    string `json:"key"`
 		Limit  int    `json:"limit"`
 		Offset int    `json:"offset"`
 	}
 	json.Unmarshal(body, &data)
-	if data.PubKey == "" {
+	if data.Key == "" {
 		return errors.New("invalid pubkey")
 	}
 	if data.Limit <= 0 || data.Limit > 100 {
@@ -260,7 +271,7 @@ func requestKey(body []byte, conn *websocket.Conn) error {
 		if err := db.Get(&metadata, `
             SELECT * FROM event
             WHERE pubkey = $1 AND kind = 0
-        `, data.PubKey); err == nil {
+        `, data.Key); err == nil {
 			jevent, _ := json.Marshal([]interface{}{
 				metadata,
 				"r",
@@ -268,7 +279,7 @@ func requestKey(body []byte, conn *websocket.Conn) error {
 			conn.WriteMessage(websocket.TextMessage, jevent)
 		} else if err != sql.ErrNoRows {
 			log.Warn().Err(err).
-				Str("key", data.PubKey).
+				Str("key", data.Key).
 				Msg("error fetching metadata from requested user")
 		}
 	}()
@@ -280,7 +291,7 @@ func requestKey(body []byte, conn *websocket.Conn) error {
             WHERE pubkey = $1 AND kind != 0
             ORDER BY created_at DESC
             LIMIT $2 OFFSET $3
-        `, data.PubKey, data.Limit, data.Offset); err == nil {
+        `, data.Key, data.Limit, data.Offset); err == nil {
 			for _, evt := range lastUpdates {
 				jevent, _ := json.Marshal([]interface{}{
 					evt,
@@ -290,7 +301,7 @@ func requestKey(body []byte, conn *websocket.Conn) error {
 			}
 		} else if err != sql.ErrNoRows {
 			log.Warn().Err(err).
-				Str("key", data.PubKey).
+				Str("key", data.Key).
 				Msg("error fetching updates from requested user")
 		}
 	}()
