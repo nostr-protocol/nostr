@@ -19,14 +19,15 @@ export default {
     file: 'static/bundle.js'
   },
   plugins: [
-    nodePolyfills(),
-
-    css({output: 'static/bundle.css'}),
-
     vuePlugin({
       include: /\.html$/,
       preprocessStyles: true
     }),
+    commonjs(),
+    nodePolyfills(),
+
+    css({output: 'static/bundle.css'}),
+
 
     json({
       // exclude: '**/bip39/src/wordlists/!(english).json',
@@ -38,7 +39,6 @@ export default {
       preferBuiltins: false
     }),
 
-    commonjs(),
 
     inject({
       Buffer: ['buffer', 'Buffer']
