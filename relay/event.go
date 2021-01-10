@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/fiatjaf/schnorr"
@@ -24,9 +25,27 @@ type Event struct {
 
 	Kind uint8 `db:"kind" json:"kind"`
 
-	Tags    []Tag  `db:"tag" json:"tags"`
+	Tags    Tags   `db:"tags" json:"tags"`
 	Content string `db:"content" json:"content"`
 	Sig     string `db:"sig" json:"sig"`
+}
+
+type Tags []Tag
+
+func (t Tags) Scan(src interface{}) error {
+	var jtags []byte = make([]byte, 0)
+
+	switch v := src.(type) {
+	case []byte:
+		jtags = v
+	case string:
+		jtags = []byte(v)
+	default:
+		return errors.New("couldn't scan tags, it's not a json string")
+	}
+
+	json.Unmarshal(jtags, t)
+	return nil
 }
 
 type Tag []interface{}
@@ -50,7 +69,11 @@ func (evt *Event) Serialize() []byte {
 	arr[3] = int64(evt.Kind)
 
 	// tags
-	arr[4] = evt.Tags
+	if evt.Tags != nil {
+		arr[4] = evt.Tags
+	} else {
+		arr[4] = make([]bool, 0)
+	}
 
 	// content
 	arr[5] = evt.Content

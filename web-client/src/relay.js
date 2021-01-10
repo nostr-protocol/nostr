@@ -16,7 +16,10 @@ db.relays
   .then(() => db.relays.toArray())
   .then(relays => {
     relays.forEach(({host, policy}) => {
-      pool.addRelay(host, parsePolicy(policy))
+      let relay = pool.addRelay(host, parsePolicy(policy))
+      setTimeout(() => {
+        relay.reqFeed()
+      }, 1)
     })
   })
 
@@ -24,7 +27,7 @@ export function relayStorePlugin(store) {
   store.subscribe(mutation => {
     switch (mutation.type) {
       case 'setInit':
-        mutation.payload.following.forEach(key => {
+        store.state.following.forEach(key => {
           pool.subKey(key)
         })
         break
@@ -38,7 +41,7 @@ export function relayStorePlugin(store) {
   })
 
   // setup event listener
-  pool.onEvent(async (context, event, {url: relayURL}) => {
+  pool.onEvent(async (event, context, {url: relayURL}) => {
     store.dispatch('receivedEvent', {event, context})
 
     // is this our note? mark it as published on this relay
@@ -61,9 +64,4 @@ export function relayStorePlugin(store) {
       status
     })
   })
-
-  // request initial feed
-  setTimeout(() => {
-    pool.reqFeed()
-  }, 1)
 }

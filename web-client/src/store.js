@@ -13,7 +13,7 @@ export default createStore({
   plugins: (process.env.NODE_ENV !== 'production'
     ? [createLogger()]
     : []
-  ).concat([init, relayStorePlugin, publishStatusLoader]),
+  ).concat([relayStorePlugin, init, publishStatusLoader]),
   state() {
     let secretKey = localStorage.getItem('key')
     if (!secretKey) {
