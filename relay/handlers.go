@@ -58,7 +58,7 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 		})
 
 		for {
-			_, message, err := conn.ReadMessage()
+			typ, message, err := conn.ReadMessage()
 			if err != nil {
 				if websocket.IsUnexpectedCloseError(
 					err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
@@ -67,9 +67,17 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 
+			if typ == websocket.PingMessage {
+				conn.WriteMessage(websocket.PongMessage, nil)
+				continue
+			}
+
 			text := string(message)
 
 			switch {
+			case text == "PING":
+				conn.WriteMessage(websocket.TextMessage, []byte("PONG"))
+
 			case strings.HasPrefix(text, "{"):
 				// it's a new event
 				err = saveEvent(message)
@@ -113,10 +121,12 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 			select {
 			case <-ticker.C:
 				conn.SetWriteDeadline(time.Now().Add(writeWait))
-				if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+				err := conn.WriteMessage(websocket.TextMessage, []byte("PING"))
+				if err != nil {
 					log.Warn().Err(err).Msg("error writing ping, closing websocket")
 					return
 				}
+				conn.WriteMessage(websocket.PingMessage, nil)
 			}
 		}
 	}()
