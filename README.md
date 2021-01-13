@@ -4,9 +4,11 @@ The most simple open protocol that is able to create a censorship-resistant glob
 
 It doesn't rely on any trusted central server, hence it is resilient; it is based on cryptographic keys and signatures, so it is tamperproof; it does not rely on P2P techniques, therefore it works.
 
-(This is all a work-in-progress.)
+This is all a work-in-progress. [Join the Telegram group!](https://t.me/nostr_protocol)
 
-[Join the Telegram group!](https://t.me/nostr_protocol)
+## Very short summary of how this works, if you don't plan to read anything else:
+
+Everybody runs a client, it can be a native client, a web client etc. To publish something you write a post, sign it with your key and send it to multiple relays (servers hosted by someone else, or you). To get updates from other people, you ask multiple relays if they know anything about these other people. Anyone can run a relay. A relay is very simple and dumb, it does nothing besides accepting posts from some people and forwarding to others. Relays don't have to be trusted, signatures are verified in the client side.
 
 ## This is needed because other solutions are broken:
 
