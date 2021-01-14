@@ -39,6 +39,11 @@ Everybody runs a client, it can be a native client, a web client etc. To publish
 - It is not as simple as this one, as it was primarily made for p2p syncing, with "pubs" being an afterthought;
 - Still, it may be worth considering using SSB instead of this custom protocol and just adapting it to the client-relay server model, just because reusing a standard is always better than trying to get people in the new one.
 
+### The problem with other solutions that require everybody to run their own server
+
+- They require everybody to run their own server;
+- Sometimes people can still be censored in these because domain names can be censored.
+
 ## How does Nostr work?
 
 - There are two components: __clients__ and __relays__. Each user runs a client. Anyone can run a relay.
@@ -84,20 +89,21 @@ Everybody runs a client, it can be a native client, a web client etc. To publish
 
   No, but you can get some estimates if relays cooperate in an extra-protocol way.
 
-### Checklist of good things and problems solved
+## Small list of software that implements the Nostr protocol somehow
 
-- [x] The protocol is very simple
-- [x] The basis of the protocol are fully specified
-- [x] There are relay and client prototypes:
-  - Web-based client: https://nostr-client.netlify.app/
-  - Relays: `https://nostr-relay.bigsun.xyz`, `https://nostr.coinos.io`
-- [ ] The system is being used in the wild
-- [ ] The client prototype looks good
-- [ ] Alternative implementations of client and relay exist
-- [ ] A way for notes to prove themselves they existed at a certain date to clients (OpenTimestamps?)
-- [ ] A way to do key revocation?
-- [ ] A way to use pubkey aliases based on DNS names?
-- [x] A way to use pubkey aliases based on petnames inside the protocol?
+### Relays
+
+  - [nostr-relay-poc](https://github.com/fiatjaf/nostr-relay-poc), written in Go, very naïve ([docker-compose files for it](https://gist.github.com/Dolu89/5d98cb929ef7d27c59bf01b14767cda2)).
+  - [nodestr](https://github.com/Dolu89/nodestr-relay), A Node.js implementation.
+
+### Clients
+
+  - [nostr-web-client-poc](https://github.com/fiatjaf/nostr-web-client-poc), a web client written with Vue.
+  - [@arcbtc's](https://github.com/arcbtc) [nostwitter](https://www.youtube.com/watch?v=EunuKuUM7j0), a Twitter-like UI that also implements private direct messages.
+
+### Libraries
+
+  - [nostr-tools](https://github.com/fiatjaf/nostr-tools), a JavaScript client that abstracts the relay management code for being used in clients, used by _nostr-web-client-poc_.
 
 ## Protocol specification
 
