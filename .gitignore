@@ -1,5 +1,0 @@
-*.env
-*.sqlite
-
-# Local Netlify folder
-.netlify
