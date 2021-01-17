@@ -89,6 +89,10 @@ Everybody runs a client, it can be a native client, a web client etc. To publish
 
   No, but you can get some estimates if relays cooperate in an extra-protocol way.
 
+## Protocol specification
+
+See the [NIPs](nips) and specially [NIP-01](nips/01.md) for a reasonably-detailed explanation of the protocol spec (hint: it is very small and simple).
+
 ## Small list of software that implements the Nostr protocol somehow
 
 ### Relays
@@ -105,9 +109,9 @@ Everybody runs a client, it can be a native client, a web client etc. To publish
 
   - [nostr-tools](https://github.com/fiatjaf/nostr-tools), a JavaScript client that abstracts the relay management code for being used in clients, used by _nostr-web-client-poc_.
 
-## Protocol specification
+### Tools
 
-See the [NIPs](nips) and specially [NIP-01](nips/01.md) for a reasonably-detailed explanation of the protocol spec (hint: it is very small and simple).
+  - [nostr-tools playground](https://codesandbox.io/s/nostr-tools-playground-mswpn?file=/src/index.js), a small JavaScript app with no persistence made for demo and experimentation purposes, many identities talking to themselves.
 
 ## License
 
