@@ -107,11 +107,13 @@ See the [NIPs](nips) and especially [NIP-01](nips/01.md) for a reasonably-detail
 
 ### Libraries
 
-  - [nostr-tools](https://github.com/fiatjaf/nostr-tools), a JavaScript client that abstracts the relay management code for use by clients, used by _nostr-web-client-poc_.
+  - [nostr-tools](https://github.com/fiatjaf/nostr-tools), a JavaScript client that abstracts the relay management code for use by clients.
+  - [go-nostr](https://github.com/fiatjaf/go-nostr), a Go library that implements relay management, plus event encoding and signing utils.
 
 ### Tools
 
-  - [nostr-tools playground](https://codesandbox.io/s/nostr-tools-playground-mswpn?file=/src/index.js), a small JavaScript app with no persistence made for demo and experimentation purposes (many identities talking to each other).
+  - [nostr registry](https://moonbreeze.richardbondi.net/nostr-registry/), a database of known relays with their uptime and NIP support tables.
+  - [nostr-launch](https://codeberg.org/rsbondi/nostr-launch), a tool for launching a bunch of relays and clients locally for development and testing.
 
 ## License
 
