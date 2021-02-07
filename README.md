@@ -104,6 +104,7 @@ See the [NIPs](nips) and especially [NIP-01](nips/01.md) for a reasonably-detail
 
   - [nostr-web-client-poc](https://github.com/fiatjaf/nostr-web-client-poc), a web client written with Vue.
   - [@arcbtc's](https://github.com/arcbtc) [nostwitter](https://www.youtube.com/watch?v=EunuKuUM7j0), a Twitter-like UI that also implements private direct messages.
+  - [noscl](https://github.com/fiatjaf/noscli), a basic command-line client written in Go.
 
 ### Libraries
 
