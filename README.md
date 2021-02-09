@@ -110,6 +110,7 @@ See the [NIPs](nips) and especially [NIP-01](nips/01.md) for a reasonably-detail
 
   - [nostr-tools](https://github.com/fiatjaf/nostr-tools), a JavaScript client that abstracts the relay management code for use by clients.
   - [go-nostr](https://github.com/fiatjaf/go-nostr), a Go library that implements relay management, plus event encoding and signing utils.
+  - [nostr-rs](https://github.com/futurepaul/nostr-rs), a non-functional Rust implementation of the nostr protocol.
 
 ### Tools
 
