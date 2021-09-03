@@ -103,13 +103,14 @@ See the [NIPs](nips) and especially [NIP-01](nips/01.md) for a reasonably-detail
 ### Clients
 
   - [nostr-web-client-poc](https://github.com/fiatjaf/nostr-web-client-poc), a web client written with Vue.
-  - [nostr-twitter](https://github.com/arcbtc/nostr), a Twitter-like UI that also implements private direct messages.
+  - [nostr-twitter](https://github.com/arcbtc/nostr), a Twitter-like UI that also implements private direct messages. ([nostr.com](https://nostr.com/), [nostwitter.netlify.app](https://nostwitter.netlify.app/#/))
   - [noscl](https://github.com/fiatjaf/noscli), a basic command-line client written in Go.
 
 ### Libraries
 
   - [nostr-tools](https://github.com/fiatjaf/nostr-tools), a JavaScript client that abstracts the relay management code for use by clients.
   - [go-nostr](https://github.com/fiatjaf/go-nostr), a Go library that implements relay management, plus event encoding and signing utils.
+  - [nostr-rs](https://github.com/futurepaul/nostr-rs), a non-functional Rust implementation of the nostr protocol.
 
 ### Tools
 
