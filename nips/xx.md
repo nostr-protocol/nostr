@@ -19,7 +19,7 @@ Example :
 
 2. Relay store the proof. 
 
-3. Relay send back the the result to the client. Client has to validate the proof.
+3. Relay send back the result to the client. Client has to validate the proof.
 
 Proof content :
 TODO
