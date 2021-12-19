@@ -8,7 +8,7 @@ Event Deletion
 
 A special event with kind `5`, meaning "deletion" is defined as having a list of one or more `e` tags, each referencing an event the author is requesting to be deleted.
 
-Each tag entry must contain an event id intended for deletion.  The `<recommended relay URL>` item should be set to `""`, but is ignored for deletion events.
+Each tag entry must contain an event id intended for deletion.  The `<recommended relay URL>` item SHOULD be set to `""`, it is ignored for deletion events.
 
 The event's `content` field MAY contain a text note describing the reason for the deletion.
 
@@ -24,15 +24,18 @@ For example:
   ],
   content: "these posts were published by accident",
   ...other fields
+}
 ```
 
-Relays MAY delete or stop publishing any referenced events that have an identical `pubkey` as the deletion request.
+Relays MAY delete or stop publishing any referenced events that have an identical `pubkey` as the deletion request.  Clients may hide or otherwise indicate a deletion status for referenced events.
 
 ## Client Usage
 
-Clients MAY choose to fully hide any events that are referenced by valid deletion events.  This includes text notes, direct messages, or other yet-to-be defined event kinds.  Alternatively, they MAY show the event along with an icon or other indication that the author has "disowned" the event.  The `content` field may also be used to replace the deleted events own content, although a user interface should clearly indicate that this is a deletion reason, not the original content.
+Clients MAY choose to fully hide any events that are referenced by valid deletion events.  This includes text notes, direct messages, or other yet-to-be defined event kinds.  Alternatively, they MAY show the event along with an icon or other indication that the author has "disowned" the event.  The `content` field MAY also be used to replace the deleted events own content, although a user interface should clearly indicate that this is a deletion reason, not the original content.
 
 A client MUST validate that each event `pubkey` referenced in the `e` tag of the deletion request is identical to the deletion request `pubkey`, before hiding or deleting any event.  Relays can not, in general, perform this validation and should not be treated as authoritative.
+
+Clients display the deletion event itself in any way they choose, e.g., not at all, or with a prominent notice.
 
 ## Relay Usage
 
