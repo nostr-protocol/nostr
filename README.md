@@ -97,20 +97,26 @@ See the [NIPs](nips) and especially [NIP-01](nips/01.md) for a reasonably-detail
 
 ### Relays
 
-  - [nostr-relay-poc](https://github.com/fiatjaf/nostr-relay-poc), written in Go, very naïve ([docker-compose files for it](https://gist.github.com/Dolu89/5d98cb929ef7d27c59bf01b14767cda2)).
+  - [nostr-rs-relay](https://sr.ht/~gheartsfield/nostr-rs-relay/), a minimalistic relay written in Rust that saves data on SQLite.
+  - [Relayer Basic](https://github.com/fiatjaf/relayer/master/tree/basic), a simple relay based on _relayer_ backed by Postgres.
+  - [rsslay](https://github.com/fiatjaf/rsslay), a bridge that puts RSS feeds into Nostr.
   - [nodestr](https://github.com/Dolu89/nodestr-relay), A Node.js implementation.
 
 ### Clients
 
-  - [nostr-web-client-poc](https://github.com/fiatjaf/nostr-web-client-poc), a web client written with Vue.
-  - [nostr-twitter](https://github.com/arcbtc/nostr), a Twitter-like UI that also implements private direct messages. ([nostr.com](https://nostr.com/), [nostwitter.netlify.app](https://nostwitter.netlify.app/#/))
+  - [branle](https://github.com/fiatjaf/branle), a Twitter-like client also with chat.
   - [noscl](https://github.com/fiatjaf/noscli), a basic command-line client written in Go.
+  - [nostr-chat](https://github.com/emeceve/nostr-chat), a desktop app written in Rust for direct encrypted chat.
+  - [chastr](https://github.com/dolu89/chastr), a mobile directed encrypted chat app written in Xamarin.
+  - [nostr-twitter](https://github.com/arcbtc/nostr), a Twitter-like UI that also implements private direct messages.
 
 ### Libraries
 
   - [nostr-tools](https://github.com/fiatjaf/nostr-tools), a JavaScript client that abstracts the relay management code for use by clients.
+  - [NNostr](https://github.com/Kukks/NNostr), a C# Nostr library.
   - [go-nostr](https://github.com/fiatjaf/go-nostr), a Go library that implements relay management, plus event encoding and signing utils.
-  - [nostr-rs](https://github.com/futurepaul/nostr-rs), a non-functional Rust implementation of the nostr protocol.
+  - [nostr-rs](https://github.com/futurepaul/nostr-rs), a Rust implementation of the nostr protocol.
+  - [relayer](https://github.com/fiatjaf/relayer), a server framework for writing custom relays.
 
 ### Tools
 
