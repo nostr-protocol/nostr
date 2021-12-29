@@ -98,7 +98,7 @@ See the [NIPs](nips) and especially [NIP-01](nips/01.md) for a reasonably-detail
 ### Relays
 
   - [nostr-rs-relay](https://sr.ht/~gheartsfield/nostr-rs-relay/), a minimalistic relay written in Rust that saves data on SQLite.
-  - [Relayer Basic](https://github.com/fiatjaf/relayer/master/tree/basic), a simple relay based on _relayer_ backed by Postgres.
+  - [Relayer Basic](https://github.com/fiatjaf/relayer/tree/master/basic), a simple relay based on _relayer_ backed by Postgres.
   - [rsslay](https://github.com/fiatjaf/rsslay), a bridge that puts RSS feeds into Nostr.
   - [nodestr](https://github.com/Dolu89/nodestr-relay), A Node.js implementation.
 
