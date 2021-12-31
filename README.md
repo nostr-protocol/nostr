@@ -120,7 +120,8 @@ See the [NIPs](nips) and especially [NIP-01](nips/01.md) for a reasonably-detail
 
 ### Tools
 
-  - [nostr registry](https://moonbreeze.richardbondi.net/nostr-registry/), a database of known relays with their uptime and NIP support tables.
+  - [nostr relay registry](https://nostr-registry.netlify.app/), real-time checking of status of some known relays.
+  - [nostr registry](https://codeberg.org/rsbondi/nostr-registry), a database of known relays with their uptime and NIP support tables.
   - [nostr-launch](https://codeberg.org/rsbondi/nostr-launch), a tool for launching a bunch of relays and clients locally for development and testing.
 
 ## License
