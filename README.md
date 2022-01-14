@@ -96,7 +96,7 @@ See the [NIPs](nips) and especially [NIP-01](nips/01.md) for a reasonably-detail
 ## Small list of software that implement the Nostr protocol somehow
 
 ### Relays
-
+  - [NNostr](https://github.com/Kukks/NNostr), a C# Nostr relay.
   - [nostr-rs-relay](https://sr.ht/~gheartsfield/nostr-rs-relay/), a minimalistic relay written in Rust that saves data on SQLite.
   - [Relayer Basic](https://github.com/fiatjaf/relayer/tree/master/basic), a simple relay based on _relayer_ backed by Postgres.
   - [rsslay](https://github.com/fiatjaf/rsslay), a bridge that puts RSS feeds into Nostr.
@@ -111,9 +111,8 @@ See the [NIPs](nips) and especially [NIP-01](nips/01.md) for a reasonably-detail
   - [nostr-twitter](https://github.com/arcbtc/nostr), a Twitter-like UI that also implements private direct messages.
 
 ### Libraries
-
+  - [NNostr.Client](https://github.com/Kukks/NNostr), a C# Nostr library for use by clients.
   - [nostr-tools](https://github.com/fiatjaf/nostr-tools), a JavaScript client that abstracts the relay management code for use by clients.
-  - [NNostr](https://github.com/Kukks/NNostr), a C# Nostr library.
   - [go-nostr](https://github.com/fiatjaf/go-nostr), a Go library that implements relay management, plus event encoding and signing utils.
   - [nostr-rs](https://github.com/futurepaul/nostr-rs), a Rust implementation of the nostr protocol.
   - [relayer](https://github.com/fiatjaf/relayer), a server framework for writing custom relays.
