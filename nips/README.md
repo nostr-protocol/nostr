@@ -12,3 +12,9 @@ NIPs stand for Nostr Implementation Possibilities. They exist to document what M
 - [NIP-09: Event Deletion](https://github.com/fiatjaf/nostr/blob/master/nips/09.md)
 - [NIP-11: Relay Information Document](https://github.com/fiatjaf/nostr/blob/master/nips/11.md)
 - [NIP-12: Generic Tag Queries](https://github.com/fiatjaf/nostr/blob/master/nips/12.md)
+
+## Note Kinds
+
+See a list of note kinds here: [kinds.csv](./kinds.csv)
+
+Please update this list when proposing NIPs introducing new note kinds.
