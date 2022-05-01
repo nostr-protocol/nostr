@@ -85,43 +85,33 @@ Everybody runs a client. It can be a native client, a web client, etc. To publis
 
   I don't know, but I imagine it has to do with the fact that people making social networks are either companies wanting to make money or P2P activists who want to make a thing completely without servers. They both fail to see the specific mix of both worlds that Nostr uses.
 
+- **How do I find people to follow?**
+
+  First you must know them and get their public key somehow, either by asking or by seeing it referenced somewhere. Once you're inside a Nostr social network you'll be able to see them interacting with other people and then you can also start following and interacting with these others.
+
+- **How do I find relays? What happens if I'm not connected to the same relays someone else is?**
+
+  You won't be able to communicate with that person. But there are hints on events that can be used so that your client software (or you, manually) know how to connect to the other person's relay and interact with them. There are other ideas on how to solve this too in the future but we can't ever promise perfect reachability, no protocol can.
+
 - **Can I know how many people are following me?**
 
   No, but you can get some estimates if relays cooperate in an extra-protocol way.
 
+- **What incentive is there for people to run relays?**
+
+  The question is misleading. It assumes that relays are free dumb pipes that exist such that people can move data around through them. In this case yes, the incentives would not exist. This in fact could be said of DHT nodes in all other p2p network stacks: what incentive is there for people to run DHT nodes?
+
+- **Nostr enables you to move between server relays or use multiple relays but if these relays are just on AWS or Azure what’s the difference?**
+
+  There are literally thousands of VPS providers scattered all around the globe today, there is not only AWS or Azure. AWS or Azure are exactly the providers used by single centralized service providers that need a lot of scale, and even then not just these two. For smaller relay servers any VPS will do the job very well.
+
 ## Protocol specification
 
-See the [NIPs](nips) and especially [NIP-01](nips/01.md) for a reasonably-detailed explanation of the protocol spec (hint: it is very short and simple).
+See the [NIPs](https://github.com/nostr-protocol/nips) and especially [NIP-01](https://github.com/nostr-protocol/nips/blob/master/01.md) for a reasonably-detailed explanation of the protocol spec (hint: it is very short and simple).
 
-## Small list of software that implement the Nostr protocol somehow
+## Software
 
-### Relays
-  - [NNostr](https://github.com/Kukks/NNostr), a C# Nostr relay.
-  - [nostr-rs-relay](https://sr.ht/~gheartsfield/nostr-rs-relay/), a minimalistic relay written in Rust that saves data on SQLite.
-  - [Relayer Basic](https://github.com/fiatjaf/relayer/tree/master/basic), a simple relay based on _relayer_ backed by Postgres.
-  - [rsslay](https://github.com/fiatjaf/rsslay), a bridge that puts RSS feeds into Nostr.
-  - [nodestr](https://github.com/Dolu89/nodestr-relay), A Node.js implementation.
-
-### Clients
-
-  - [branle](https://github.com/fiatjaf/branle), a Twitter-like client also with chat.
-  - [noscl](https://github.com/fiatjaf/noscli), a basic command-line client written in Go.
-  - [nostr-chat](https://github.com/emeceve/nostr-chat), a desktop app written in Rust for direct encrypted chat.
-  - [chastr](https://github.com/dolu89/chastr), a mobile directed encrypted chat app written in Xamarin.
-  - [nostr-twitter](https://github.com/arcbtc/nostr), a Twitter-like UI that also implements private direct messages.
-
-### Libraries
-  - [NNostr.Client](https://github.com/Kukks/NNostr), a C# Nostr library for use by clients.
-  - [nostr-tools](https://github.com/fiatjaf/nostr-tools), a JavaScript client that abstracts the relay management code for use by clients.
-  - [go-nostr](https://github.com/fiatjaf/go-nostr), a Go library that implements relay management, plus event encoding and signing utils.
-  - [nostr-rs](https://github.com/futurepaul/nostr-rs), a Rust implementation of the nostr protocol.
-  - [relayer](https://github.com/fiatjaf/relayer), a server framework for writing custom relays.
-
-### Tools
-
-  - [nostr relay registry](https://nostr-registry.netlify.app/), real-time checking of status of some known relays.
-  - [nostr registry](https://codeberg.org/rsbondi/nostr-registry), a database of known relays with their uptime and NIP support tables.
-  - [nostr-launch](https://codeberg.org/rsbondi/nostr-launch), a tool for launching a bunch of relays and clients locally for development and testing.
+There is a list of most software being built using Nostr on https://github.com/aljazceru/awesome-nostr that seemed to be almost complete last time I looked.
 
 ## License
 
