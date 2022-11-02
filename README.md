@@ -24,7 +24,7 @@ Everybody runs a client. It can be a native client, a web client, etc. To publis
 ### The problem with Mastodon and similar programs
 
 - User identities are attached to domain names controlled by third-parties;
-- Server owners can ban you, just like Twitter;
+- Server owners can ban you, just like Twitter; Server owners can also block other servers;
 - Migration between servers is an afterthought and can only be accomplished if servers cooperate. It doesn't work in an adversarial environment (all followers are lost);
 - There are no clear incentives to run servers, therefore they tend to be run by enthusiasts and people who want to have their name attached to a cool domain. Then, users are subject to the despotism of a single person, which is often worse than that of a big company like Twitter, and they can't migrate out;
 - Since servers tend to be run amateurishly, they are often abandoned after a while — which is effectively the same as banning everybody;
