@@ -16,6 +16,8 @@ Everybody runs a client. It can be a native client, a web client, etc. To publis
 
 [List of projects built on Nostr](https://github.com/aljazceru/awesome-nostr)
 
+[UseNostr.org - An introduction to Nostr](https://usenostr.org)
+
 ## This is needed because other solutions are broken:
 
 ### The problem with Twitter
