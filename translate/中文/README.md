@@ -7,53 +7,53 @@
 
 這是一個正在進行中的工作，[歡迎加入 Telegram 群組！](https://t.me/nostr_protocol)
 
-## Very short summary of how it works, if you don't plan to read anything else:
+## 如果你不打算閱讀其他內容，以下是它運作的簡短摘要：
 
-Everybody runs a client. It can be a native client, a web client, etc. To publish something, you write a post, sign it with your key and send it to multiple relays (servers hosted by someone else, or yourself). To get updates from other people, you ask multiple relays if they know anything about these other people. Anyone can run a relay. A relay is very simple and dumb. It does nothing besides accepting posts from some people and forwarding to others. Relays don't have to be trusted. Signatures are verified on the client side.
+每個人都運行客戶端。它可以是原生客戶端、Web 客戶端等。要發布內容，您需要撰寫一篇文章，用您的金鑰對其進行簽名，然後將其發送到多個轉接器（由他人或您自己託管的服務器）。要獲取其他人的更新，您可以向多個轉接器請求是否有關於這些其他人的任何信息。任何人都可以運行轉接器。轉接器非常簡單和愚笨。它除了接受某些人的文章並轉發給其他人之外什麼也不做。轉接器不需要受信任。簽名在客戶端上驗證。
 
-[How to start using Nostr](https://github.com/vishalxl/nostr_console/discussions/31)
+[如何開始使用 Nostr](https://github.com/vishalxl/nostr_console/discussions/31)
 
-[Nostr client feature comparison](https://github.com/vishalxl/Nostr-Clients-Features-List/blob/main/Readme.md)
+[Nostr 客戶端功能比較](https://github.com/vishalxl/Nostr-Clients-Features-List/blob/main/Readme.md)
 
-[List of projects built on Nostr](https://github.com/aljazceru/awesome-nostr)
+[基於 Nostr 的項目列表](https://github.com/aljazceru/awesome-nostr)
 
-## This is needed because other solutions are broken:
+## 需要這是因為其他解決方案出現問題：
 
-### The problem with Twitter
+### Twitter 的問題
 
-- Twitter has ads;
-- Twitter uses bizarre techniques to keep you addicted;
-- Twitter doesn't show an actual historical feed from people you follow;
-- Twitter bans people;
-- Twitter shadowbans people;
-- Twitter has a lot of spam.
+- Twitter 有廣告；
+- Twitter 使用奇怪的技術讓你上癮；
+- Twitter 不顯示您關注的人的實際歷史動態；
+- Twitter 禁止某些人；
+- Twitter 隱藏某些人；
+- Twitter 有很多垃圾郵件。
 
-### The problem with Mastodon and similar programs
+### Mastodon 和類似程序的問題
 
-- User identities are attached to domain names controlled by third-parties;
-- Server owners can ban you, just like Twitter; Server owners can also block other servers;
-- Migration between servers is an afterthought and can only be accomplished if servers cooperate. It doesn't work in an adversarial environment (all followers are lost);
-- There are no clear incentives to run servers, therefore, they tend to be run by enthusiasts and people who want to have their name attached to a cool domain. Then, users are subject to the despotism of a single person, which is often worse than that of a big company like Twitter, and they can't migrate out;
-- Since servers tend to be run amateurishly, they are often abandoned after a while — which is effectively the same as banning everybody;
-- It doesn't make sense to have a ton of servers if updates from every server will have to be painfully pushed (and saved!) to a ton of other servers. This point is exacerbated by the fact that servers tend to exist in huge numbers, therefore more data has to be passed to more places more often;
-- For the specific example of video sharing, ActivityPub enthusiasts realized it would be completely impossible to transmit video from server to server the way text notes are, so they decided to keep the video hosted only from the single instance where it was posted to, which is similar to the Nostr approach.
+- 使用者身份附加在由第三方控制的域名上；
+- 服務器擁有者可以像 Twitter 一樣禁止您；服務器擁有者還可以阻止其他服務器；
+- 在對抗環境中，遷移之間是一個後顧之憂，只有服務器合作才能實現。在失敗的情況下，所有追蹤者都會丟失；
+- 沒有明確的激勵措施來運行服務器，因此它們往往由熱心愛好者和想要將自己的名字與一個很酷的域名相關聯的人來運行。然後，用戶受到單個人的專制統治，這通常比 Twitter 等大公司更糟糕，他們無法遷移出去；
+- 由於服務器往往是業餘人士運行，所以它們經常在一段時間後被廢棄——這與禁止每個人的效果相同；
+- 如果每個服務器的更新必須痛苦地推送（和保存！）到許多其他服務器，那麼擁有大量服務器是毫無意義的。這一點由於服務器往往存在大量，因此需要將更多數據傳遞到更多地方更經常；
+- 對於影片分享的特定示例，ActivityPub 熱衷者意識到從服務器到服務器傳輸影片是完全不可能的，所以他們決定將影片僅從發布它的單個實例中托管，這與 Nostr 方法類似。
 
-### The problem with SSB (Secure Scuttlebutt)
+### SSB（Secure Scuttlebutt）的問題
 
-- It doesn't have many problems. I think it's great. I was going to use it as a basis for this, but
-- its protocol is too complicated because it wasn't thought about being an open protocol at all. It was just written in JavaScript in probably a quick way to solve a specific problem and grew from that, therefore it has weird and unnecessary quirks like signing a JSON string which must strictly follow the rules of [_ECMA-262 6th Edition_](https://www.ecma-international.org/ecma-262/6.0/#sec-json.stringify);
-- It insists on having a chain of updates from a single user, which feels unnecessary to me and something that adds bloat and rigidity to the thing — each server/user needs to store all the chain of posts to be sure the new one is valid. Why? (Maybe they have a good reason);
-- It is not as simple as Nostr, as it was primarily made for P2P syncing, with "pubs" being an afterthought;
-- Still, it may be worth considering using SSB instead of this custom protocol and just adapting it to the client-relay server model, because reusing a standard is always better than trying to get people in a new one.
+- 它沒有太多問題。我認為它很棒。我本來想將其用作基礎來進行此項目，但是
+- 因為它沒有考慮成為一個開放協議，所以其協議過於複雜。它只是用 JavaScript 編寫，可能是為了快速解決特定問題，然後從那裡發展而來，因此它具有奇怪且不必要的怪癖，如簽署必須嚴格遵循 [_ECMA-262 6th Edition_](https://www.ecma-international.org/ecma-262/6.0/#sec-json.stringify) 規則的 JSON 字符串；
+- 它堅持需要來自單個用戶的更新鏈，我認為這是不必要的，它增加了贅餘和僵硬的東西——每個服務器/用戶需要存儲所有文章鏈以確保新文章有效。為甚麼？（也許他們有一個好的理由）；
+- 它不像 Nostr 那麼簡單，因為它主要是用於 P2P 同步，並且「pubs」是一個次要考慮的問題；
+- 儘管如此，仍然值得考慮改用 SSB 而不是這個自定義協議，並將其適應為客戶端-中繼服務器模型，因為重複使用標准始終比嘗試讓人們使用新標准更好。
 
-### The problem with other solutions that require everybody to run their own server
+### 其他需要每個人運行自己服務器的解決方案的問題
 
-- They require everybody to run their own server;
-- Sometimes people can still be censored in these because domain names can be censored.
+- 它們要求每個人都運行自己的服務器；
+- 有時人們仍然可能會在其中被審查，因為域名可能會受到審查。
 
-## How does Nostr work?
+## Nostr 如何運作？
 
-- There are two components: __clients__ and __relays__. Each user runs a client. Anyone can run a relay.
+- 有兩個組件：**客戶端** 和 **中繼服務器**。每個用戶都運行客戶端。任何人都可以運行中繼服務器。
 - Every user is identified by a public key. Every post is signed. Every client validates these signatures.
 - Clients fetch data from relays of their choice and publish data to other relays of their choice. A relay doesn't talk to another relay, only directly to users.
 - For example, to "follow" someone a user just instructs their client to query the relays it knows for posts from that public key.
