@@ -1,8 +1,10 @@
-# nostr - Notes and Other Stuff Transmitted by Relays
+# nostr - 透過中繼傳輸的筆記及其他內容
+> Notes and Other Stuff Transmitted by Relays
 
-The simplest open protocol that is able to create a censorship-resistant global "social" network once and for all.
 
-It doesn't rely on any trusted central server, hence it is resilient; it is based on cryptographic keys and signatures, so it is tamperproof; it does not rely on P2P techniques, and therefore it works.
+能夠一勞永逸創建一個抗審查的全球「社交」網絡，最單純的開放協議。
+
+它不依賴於任何受信任的中央服務器，因此具有彈性；它基於加密密鑰和簽名，因此是防篡改的；它不依賴於 P2P 技術，因此可以正常工作。
 
 This is a work in progress. [Join the Telegram group!](https://t.me/nostr_protocol)
 
