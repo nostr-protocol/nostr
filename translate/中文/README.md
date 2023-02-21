@@ -76,33 +76,33 @@
 - **詐騙訊息**
   - 若詐騙訊息對中繼轉接器造成威脅，它可以要求用戶支付發佈費用或其他形式的驗證，例如電子郵件地址或手機號碼，並在內部與一個公共密鑰相關聯，然後該公共密鑰就可以發佈到該中繼轉接器上 - 或者其他抗詐騙訊息技術，例如哈希現金或驗證碼。如果中繼轉接器被用作詐騙訊息向量，則客戶端可以輕鬆將其從列表中刪除，並繼續從其他中繼轉接器獲取更新。
 
-- **Data storage**
-  - For the network to stay healthy, there is no need for hundreds of active relays. In fact, it can work just fine with just a handful, given the fact that new relays can be created and spread through the network easily in case the existing relays start misbehaving. Therefore, the amount of data storage required, in general, is relatively less than Mastodon or similar software.
-  - Or considering a different outcome: one in which there exist hundreds of niche relays run by amateurs, each relaying updates from a small group of users. The architecture scales just as well: data is sent from users to a single server, and from that server directly to the users who will consume that. It doesn't have to be stored by anyone else. In this situation, it is not a big burden for any single server to process updates from others, and having amateur servers is not a problem.
+- **數據存儲**
+  - 為了保持網絡健康，並不需要數百個活躍的中繼轉接器。實際上，只有幾個轉接器也可以運作得很好，因為在現有的中繼轉接器開始運作不當的情況下，新的中繼轉接器可以很容易地在網絡中創建並傳播。因此，總體而言，所需的數據存儲量相對於Mastodon或類似軟件來說相對較少。
+  - 或者考慮另一種情況：存在數百個業餘運營的小型中繼轉接器，每個中繼轉接器都中繼來自一小組用戶的更新。該體系結構同樣可擴展：數據從用戶發送到單個伺服器，然後從該伺服器直接傳送給將要消費該數據的用戶。它不需要由任何其他人存儲。在這種情況下，任何單個伺服器處理來自其他用戶的更新都不是什麼大負擔，並且擁有業餘伺服器不是問題。
 
-- **Video and other heavy content**
-  - It's easy for a relay to reject large content, or to charge for accepting and hosting large content. When information and incentives are clear, it's easy for the market forces to solve the problem.
+- **影片和其他重型內容**
+  - 中繼轉接器可以輕鬆拒絕大型內容，或收取費用以接受和托管大型內容。當信息和激勵措施清晰時，市場力量可以輕鬆解決問題。
 
-- **Techniques to trick the user**
-  - Each client can decide how to best show posts to users, so there is always the option of just consuming what you want in the manner you want — from using an AI to decide the order of the updates you'll see to just reading them in chronological order.
+- **欺騙用戶的技術**
+  - 每個客戶端都可以決定如何最好地向用戶顯示貼文，因此始終有選擇按您想要的方式消耗內容的選項 - 從使用人工智能來決定您將看到的更新的順序，到按時間順序閱讀它們。
 
-## FAQ
+## 常見問題 FAQ
 
-- **This is very simple. Why hasn't anyone done it before?**
+- **這很簡單。為甚麼以前沒有人這樣做？**
 
-  I don't know, but I imagine it has to do with the fact that people making social networks are either companies wanting to make money or P2P activists who want to make a thing completely without servers. They both fail to see the specific mix of both worlds that Nostr uses.
+我不知道，但我想這可能與製作社交網絡的人要麼是想賺錢的公司，要麼是想完全不使用伺服器的P2P活動家有關。他們都未能看到Nostr使用的兩個世界的具體結合。
 
-- **How do I find people to follow?**
+- **我如何找到要關注的人？**
 
-  First, you must know them and get their public key somehow, either by asking or by seeing it referenced somewhere. Once you're inside a Nostr social network you'll be able to see them interacting with other people and then you can also start following and interacting with these others.
+首先，您必須知道他們，並以某種方式獲得他們的公共密鑰，可以通過請求或在某個地方看到它們的引用來獲取。一旦進入Nostr社交網絡，您就可以看到他們與其他人的互動，然後您也可以開始關注和與其他人互動。
 
-- **How do I find relays? What happens if I'm not connected to the same relays someone else is?**
+- **我如何找到中繼轉接器？如果我與其他人未連接到同一個中繼轉接器會發生甚麼？**
 
-  You won't be able to communicate with that person. But there are hints on events that can be used so that your client software (or you, manually) knows how to connect to the other person's relay and interact with them. There are other ideas on how to solve this too in the future but we can't ever promise perfect reachability, no protocol can.
+您將無法與該人進行通信。但是，有關事件的提示可以用作您的客戶端軟件（或您手動）知道如何連接到另一個人的中繼轉接器並與其互動。未來還有其他解決此問題的想法，但我們無法保證完美的可達性，沒有協議可以實現這一點。
 
-- **Can I know how many people are following me?**
+- **我可以知道有多少人在關注我嗎？**
 
-  No, but you can get some estimates if relays cooperate in an extra-protocol way.
+不行，但如果中繼轉接器在協議之外合作，您可以得到一些估計。
 
 - **What incentive is there for people to run relays?**
 
