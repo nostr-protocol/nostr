@@ -54,11 +54,11 @@
 ## Nostr 如何運作？
 
 - 有兩個組件：**客戶端** 和 **中繼服務器**。每個用戶都運行客戶端。任何人都可以運行中繼服務器。
-- Every user is identified by a public key. Every post is signed. Every client validates these signatures.
-- Clients fetch data from relays of their choice and publish data to other relays of their choice. A relay doesn't talk to another relay, only directly to users.
-- For example, to "follow" someone a user just instructs their client to query the relays it knows for posts from that public key.
-- On startup, a client queries data from all relays it knows for all users it follows (for example, all updates from the last day), then displays that data to the user chronologically.
-- A "post" can contain any kind of structured data, but the most used ones are going to find their way into the standard so all clients and relays can handle them seamlessly.
+- 每個用戶都由公共密鑰識別。每個帖子都經過簽署。每個客戶端驗證這些簽名。
+- 客戶端從其選擇的中繼服務器提取數據並將數據發布到其選擇的其他中繼服務器。一個中繼服務器不與另一個中繼服務器通信，僅直接與用戶通信。
+- 例如，要「關注」某人，用戶只需指示其客戶端向其所知的中繼服務器查詢來自該公共密鑰的帖子。
+- 在啟動時，客戶端會從其所知道的所有中繼服務器中查詢所有其正在關注的用戶的數據（例如，從最近一天開始的所有更新），然後按時間順序向用戶顯示該數據。
+- 「貼文」可以包含任何形式的結構化數據，但最常用的數據將在標準中找到其位置，因此所有客戶端和中繼服務器都可以無縫處理它們。
 
 ## How does it solve the problems the networks above can't?
 
