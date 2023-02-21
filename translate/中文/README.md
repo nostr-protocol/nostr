@@ -1,12 +1,11 @@
-# nostr - 透過中繼傳輸的筆記及其他內容
+# nostr - 透過中繼傳輸的筆記和其他資訊
 > Notes and Other Stuff Transmitted by Relays
 
+最簡單的開放協議，能夠一次性創建一個抵抗審查的全球「社交」網絡。
 
-能夠一勞永逸創建一個抗審查的全球「社交」網絡，最單純的開放協議。
+它不依賴任何值得信賴的中央服務器，因此它具有韌性；它基於密碼學密鑰和簽名，因此它是防篡改的；它不依賴P2P技術，因此它能夠運作。
 
-它不依賴於任何受信任的中央服務器，因此具有彈性；它基於加密密鑰和簽名，因此是防篡改的；它不依賴於 P2P 技術，因此可以正常工作。
-
-這是一個正在進行的作業。 [加入 Telegram 群組！](https://t.me/nostr_protocol)
+這是一個正在進行中的工作，[歡迎加入 Telegram 群組！](https://t.me/nostr_protocol)
 
 ## Very short summary of how it works, if you don't plan to read anything else:
 
