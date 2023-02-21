@@ -6,7 +6,7 @@
 
 它不依賴於任何受信任的中央服務器，因此具有彈性；它基於加密密鑰和簽名，因此是防篡改的；它不依賴於 P2P 技術，因此可以正常工作。
 
-This is a work in progress. [Join the Telegram group!](https://t.me/nostr_protocol)
+這是一個正在進行的作業。 [加入 Telegram 群組！](https://t.me/nostr_protocol)
 
 ## Very short summary of how it works, if you don't plan to read anything else:
 
