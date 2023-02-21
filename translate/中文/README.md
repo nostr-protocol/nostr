@@ -90,36 +90,36 @@
 
 - **這很簡單。為甚麼以前沒有人這樣做？**
 
-我不知道，但我想這可能與製作社交網絡的人要麼是想賺錢的公司，要麼是想完全不使用伺服器的P2P活動家有關。他們都未能看到Nostr使用的兩個世界的具體結合。
+    我不知道，但我想這可能與製作社交網絡的人要麼是想賺錢的公司，要麼是想完全不使用伺服器的P2P活動家有關。他們都未能看到Nostr使用的兩個世界的具體結合。
 
 - **我如何找到要關注的人？**
 
-首先，您必須知道他們，並以某種方式獲得他們的公共密鑰，可以通過請求或在某個地方看到它們的引用來獲取。一旦進入Nostr社交網絡，您就可以看到他們與其他人的互動，然後您也可以開始關注和與其他人互動。
+    首先，您必須知道他們，並以某種方式獲得他們的公共密鑰，可以通過請求或在某個地方看到它們的引用來獲取。一旦進入Nostr社交網絡，您就可以看到他們與其他人的互動，然後您也可以開始關注和與其他人互動。
 
 - **我如何找到中繼轉接器？如果我與其他人未連接到同一個中繼轉接器會發生甚麼？**
 
-您將無法與該人進行通信。但是，有關事件的提示可以用作您的客戶端軟件（或您手動）知道如何連接到另一個人的中繼轉接器並與其互動。未來還有其他解決此問題的想法，但我們無法保證完美的可達性，沒有協議可以實現這一點。
+    您將無法與該人進行通信。但是，有關事件的提示可以用作您的客戶端軟件（或您手動）知道如何連接到另一個人的中繼轉接器並與其互動。未來還有其他解決此問題的想法，但我們無法保證完美的可達性，沒有協議可以實現這一點。
 
 - **我可以知道有多少人在關注我嗎？**
 
-不行，但如果中繼轉接器在協議之外合作，您可以得到一些估計。
+    不行，但如果中繼轉接器在協議之外合作，您可以得到一些估計。
 
-- **What incentive is there for people to run relays?**
+- **運營中繼轉接器的人有甚麼動機？**
 
-  The question is misleading. It assumes that relays are free dumb pipes that exist such that people can move data around through them. In this case yes, the incentives would not exist. This in fact could be said of DHT nodes in all other p2p network stacks: what incentive is there for people to run DHT nodes?
+    這個問題很具有誤導性。它假定中繼轉接器是免費的傻瓜管道，存在只是為了讓人們通過它們傳輸數據。在這種情況下，是的，激勵措施是不存在的。事實上，這可以說是所有其他P2P網絡堆棧中DHT節點的情況：有甚麼激勵措施可以讓人們運營DHT節點？
 
-- **Nostr enables you to move between server relays or use multiple relays but if these relays are just on AWS or Azure what’s the difference?**
+- **Nostr使您能夠在伺服器中繼之間移動或使用多個中繼，但如果這些中繼只是在AWS或Azure上，有甚麼不同嗎？**
 
-  There are literally thousands of VPS providers scattered all around the globe today, there is not only AWS or Azure. AWS or Azure are exactly the providers used by single centralized service providers that need a lot of scale, and even then not just these two. For smaller relay servers any VPS will do the job very well.
+    今天全球有數千家VPS提供商，不僅是AWS或Azure。AWS或Azure是單一集中服務提供商使用的提供商，需要大量規模，即使這樣也不僅僅是這兩個。對於小型中繼轉接器，任何VPS都可以很好地完成工作。
 
-## Protocol specification
+## 協議規範
 
-See the [NIPs](https://github.com/nostr-protocol/nips) and especially [NIP-01](https://github.com/nostr-protocol/nips/blob/master/01.md) for a reasonably-detailed explanation of the protocol spec (hint: it is very short and simple).
+請參閱[NIPs](https://github.com/nostr-protocol/nips)和特別是[NIP-01](https://github.com/nostr-protocol/nips/blob/master/01.md)，其中對協議規範進行了相當詳細的解釋（提示：非常簡短和簡單）。
 
-## Software
+## 軟件
 
-There is a list of most software being built using Nostr on https://github.com/aljazceru/awesome-nostr that seemed to be almost complete last time I looked.
+有一個正在使用Nostr構建的軟件列表，可在 https://github.com/aljazceru/awesome-nostr 上查看，上次我看到它時，它似乎幾乎是完整的。
 
-## License
+## 許可
 
-Public domain.
+公共領域。
