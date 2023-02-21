@@ -26,7 +26,7 @@
 - Twitter 不顯示您關注的人的實際歷史動態；
 - Twitter 禁止某些人；
 - Twitter 隱藏某些人；
-- Twitter 有很多垃圾郵件。
+- Twitter 有很多詐騙訊息。
 
 ### Mastodon 和類似程序的問題
 
@@ -62,19 +62,19 @@
 
 ## 它如何解決上述網絡無法解決的問題？
 
-- **用戶被禁止和服務器被關閉**
+- **用戶被禁止和轉接器被關閉**
   - 中繼轉接器可以阻止用戶在那裡發佈任何內容，但對他們沒有任何影響，因為他們仍然可以發佈到其他中繼轉接器。由於用戶由公共密鑰識別，因此當他們被禁止時，他們不會失去自己的身份和追隨者基礎。
-  - 除了要求用戶手動輸入新的中繼轉接器地址（雖然這也應得到支持）之外，如果你正在關注的某人發佈服務器建議，則客戶端應自動Instead of requiring users to manually type new relay addresses (although this should also be supported), whenever someone you're following posts a server recommendation, the client should automatically add that to the list of relays it will query.
-  - If someone is using a relay to publish their data but wants to migrate to another one, they can publish a server recommendation to that previous relay and go;
-  - If someone gets banned from many relays such that they can't get their server recommendations broadcasted, they may still let some close friends know through other means with which relay they are publishing now. Then, these close friends can publish server recommendations to that new server, and slowly, the old follower base of the banned user will begin finding their posts again from the new relay.
-  - All of the above is valid too for when a relay ceases its operations.
+  - 除了要求用戶手動輸入新的中繼轉接器地址（雖然這也應得到支持）之外，如果你正在關注的某人發佈轉接器建議，則客戶端應自動將其添加到它將查詢的中繼轉接器列表中。
+  - 如果有人使用中繼轉接器發佈其數據，但想遷移到另一個中繼轉接器，則可以向該先前的中繼轉接器發佈轉接器建議，然後再移動；
+  - 如果某個人被多個中繼轉接器封鎖，以至於他們無法廣播其轉接器建議，他們仍然可以通過其他方式告訴一些親密的朋友他們現在正在哪個中繼轉接器上發佈。然後，這些親密的朋友可以向新轉接器發佈轉接器建議，慢慢地，被封鎖的用戶的舊追隨者群將開始從新的中繼轉接器中找到他們的貼文。
+  - 以上所有內容也適用於中繼轉接器停止運營的情況。
 
-- **Censorship-resistance**
-  - Each user can publish their updates to any number of relays.
-  - A relay can charge a fee (the negotiation of that fee is outside of the protocol for now) from users to publish there, which ensures censorship-resistance (there will always be some Russian server willing to take your money in exchange for serving your posts).
+- **對審查的抗爭**
+  - 每個用戶可以將其更新發佈到任意數量的中繼轉接器上。
+  - 中繼轉接器可以向用戶收取費用（目前協商該費用的金額外部協議），以確保它們不會受到審查（總是有一些願意接受你的錢以提供服務的俄羅斯轉接器）。
 
-- **Spam**
-  - If spam is a concern for a relay, it can require payment for publication or some other form of authentication, such as an email address or phone, and associate these internally with a pubkey that then gets to publish to that relay — or other anti-spam techniques, like hashcash or captchas. If a relay is being used as a spam vector, it can easily be unlisted by clients, which can continue to fetch updates from other relays.
+- **詐騙訊息**
+  - 若詐騙訊息對中繼轉接器造成威脅，它可以要求用戶支付發佈費用或其他形式的驗證，例如電子郵件地址或手機號碼，並在內部與一個公共密鑰相關聯，然後該公共密鑰就可以發佈到該中繼轉接器上 - 或者其他抗詐騙訊息技術，例如哈希現金或驗證碼。如果中繼轉接器被用作詐騙訊息向量，則客戶端可以輕鬆將其從列表中刪除，並繼續從其他中繼轉接器獲取更新。
 
 - **Data storage**
   - For the network to stay healthy, there is no need for hundreds of active relays. In fact, it can work just fine with just a handful, given the fact that new relays can be created and spread through the network easily in case the existing relays start misbehaving. Therefore, the amount of data storage required, in general, is relatively less than Mastodon or similar software.
