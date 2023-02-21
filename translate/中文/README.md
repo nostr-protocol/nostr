@@ -60,10 +60,10 @@
 - 在啟動時，客戶端會從其所知道的所有中繼服務器中查詢所有其正在關注的用戶的數據（例如，從最近一天開始的所有更新），然後按時間順序向用戶顯示該數據。
 - 「貼文」可以包含任何形式的結構化數據，但最常用的數據將在標準中找到其位置，因此所有客戶端和中繼服務器都可以無縫處理它們。
 
-## How does it solve the problems the networks above can't?
+## 它如何解決上述網絡無法解決的問題？
 
-- **Users getting banned and servers being closed**
-  - A relay can block a user from publishing anything there, but that has no effect on them as they can still publish to other relays. Since users are identified by a public key, they don't lose their identities and their follower base when they get banned.
+- **用戶被禁止和服務器被關閉**
+  - 中繼服務器可以阻止用戶在那裡發佈任何內容，但對他們沒有任何影響，因為他們仍然可以發佈到其他中繼服務器。由於用戶由公共密鑰識別，因此當他們被禁止時，他們不會失去自己的身份和追隨者基礎。
   - Instead of requiring users to manually type new relay addresses (although this should also be supported), whenever someone you're following posts a server recommendation, the client should automatically add that to the list of relays it will query.
   - If someone is using a relay to publish their data but wants to migrate to another one, they can publish a server recommendation to that previous relay and go;
   - If someone gets banned from many relays such that they can't get their server recommendations broadcasted, they may still let some close friends know through other means with which relay they are publishing now. Then, these close friends can publish server recommendations to that new server, and slowly, the old follower base of the banned user will begin finding their posts again from the new relay.
