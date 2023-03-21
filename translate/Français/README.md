@@ -1,8 +1,6 @@
 # nostr - Notes et Autres Choses Transmises par Relais
 > Notes and Other Stuff Transmitted by Relays
 
-# nostr - Notes et autres éléments transmis par relais
-
 Le protocole ouvert le plus simple capable de créer un réseau social mondial résistant à la censure une fois pour toutes.
 
 Il ne dépend d'aucun serveur central de confiance, donc il est résilient ; il est basé sur des clés et des signatures cryptographiques, donc il est inviolable ; il ne dépend pas des techniques P2P, donc il fonctionne.
