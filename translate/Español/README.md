@@ -43,3 +43,38 @@ Todo el mundo ejecuta un cliente. Puede ser un cliente nativo, un cliente web, e
 - insiste en tener una cadena de actualizaciones de un solo usuario, lo cual me parece innecesario y algo que agrega inflado y rigidez a la cosa; cada servidor/usuario debe almacenar toda la cadena de publicaciones para estar seguro de que la nueva es válida. ¿Por qué? (Tal vez tengan una buena razón);
 - No es tan simple como Nostr, ya que se hizo principalmente para la sincronización P2P, siendo las "pubs" una idea secundaria;
 - Aún así, puede valer la pena considerar el uso de SSB en lugar de este protocolo personalizado y simplemente adaptarlo al modelo cliente-relé de servidor, porque reutilizar un estándar siempre es mejor que tratar de hacer que la gente se una a uno nuevo.
+
+## Problemas con otras soluciones que requieren que todos ejecuten su propio servidor
+
+- Requieren que todos ejecuten su propio servidor;
+- A veces, las personas aún pueden ser censuradas en estas soluciones porque los nombres de dominio pueden ser censurados.
+
+## ¿Cómo funciona Nostr?
+
+- Hay dos componentes: __clientes__ y __retransmisiones__. Cada usuario ejecuta un cliente. Cualquiera puede ejecutar una retransmisión.
+- Cada usuario está identificado por una clave pública. Cada publicación está firmada. Cada cliente valida estas firmas.
+- Los clientes recuperan datos de las retransmisiones de su elección y publican datos en otras retransmisiones de su elección. Una retransmisión no habla con otra retransmisión, solo directamente con los usuarios.
+- Por ejemplo, para "seguir" a alguien, un usuario simplemente instruye a su cliente que consulte las retransmisiones que conoce para obtener publicaciones de esa clave pública.
+- Al iniciarse, un cliente consulta datos de todas las retransmisiones que conoce para todos los usuarios que sigue (por ejemplo, todas las actualizaciones desde el día anterior), luego muestra esos datos al usuario cronológicamente.
+- Una "publicación" puede contener cualquier tipo de datos estructurados, pero los más utilizados encontrarán su camino en el estándar para que todos los clientes y retransmisiones puedan manejarlos sin problemas.
+
+## ¿Cómo resuelve los problemas que las redes anteriores no pueden?
+
+- **Usuarios baneados y servidores cerrados**
+  - Un relay puede bloquear a un usuario para publicar en él, pero eso no tiene efecto ya que aún puede publicar en otros relays. Como los usuarios son identificados por una clave pública, no pierden su identidad ni su base de seguidores cuando son baneados.
+  - En lugar de requerir que los usuarios escriban manualmente nuevas direcciones de relays (aunque también debería ser compatible), cuando alguien que sigues publica una recomendación de servidor, el cliente debe agregar automáticamente eso a la lista de relays que consultará.
+  - Si alguien está usando un relay para publicar sus datos pero quiere migrar a otro, puede publicar una recomendación de servidor en ese relay anterior y listo.
+  - Si alguien es baneado de muchos relays de manera que no puede hacer que sus recomendaciones de servidor se transmitan, aún puede informar a algunos amigos cercanos a través de otros medios en qué relay está publicando ahora. Entonces, estos amigos cercanos pueden publicar recomendaciones de servidor a ese nuevo servidor y, lentamente, la antigua base de seguidores del usuario baneado comenzará a encontrar sus publicaciones nuevamente desde el nuevo relay.
+  - Todo lo anterior también es válido cuando un relay cesa sus operaciones.
+
+- **Resistencia a la censura**
+  - Cada usuario puede publicar sus actualizaciones en cualquier cantidad de retransmisiones.
+  - Una retransmisión puede cobrar una tarifa (la negociación de esa tarifa está fuera del protocolo por ahora) a los usuarios para publicar allí, lo que asegura la resistencia a la censura (siempre habrá algún servidor ruso dispuesto a tomar su dinero a cambio de servir sus publicaciones).
+
+- **Spam**
+  - Si el spam es una preocupación para una retransmisión, puede requerir un pago por publicación u otra forma de autenticación, como una dirección de correo electrónico o un teléfono, y asociarlos internamente con una pubkey que luego pueda publicar en esa retransmisión, o utilizar otras técnicas anti-spam, como hashcash o captchas. Si una retransmisión está siendo utilizada como vector de spam, puede ser fácilmente eliminada de la lista por los clientes, que pueden continuar obteniendo actualizaciones de otras retransmisiones.
+
+- **Almacenamiento de datos**
+  - Para que la red funcione correctamente, no se necesitan cientos de relays activos. De hecho, puede funcionar perfectamente bien con solo unos pocos, dado que nuevos relays pueden crearse y propagarse fácilmente en la red en caso de que los relays existentes comiencen a comportarse mal. Por lo tanto, la cantidad de almacenamiento de datos requerido, en general, es relativamente menor que en Mastodon u otro software similar.
+  - O considerando un resultado diferente: uno en el que existen cientos de relays de nicho administrados por aficionados, cada uno transmitiendo actualizaciones de un pequeño grupo de usuarios. La arquitectura también es escalable: los datos se envían desde los usuarios a un servidor único y desde ese servidor directamente a los usuarios que los consumirán. No es necesario que nadie más los almacene. En esta situación, no es una gran carga para ningún servidor procesar actualizaciones de otros, y tener servidores de aficionados no es un problema.
+
