@@ -112,3 +112,14 @@ Tout le monde exécute un client. Il peut s'agir d'un client natif, d'un client 
 
   Il y a littéralement des milliers de fournisseurs de VPS dispersés partout dans le monde aujourd'hui, il n'y a pas seulement AWS ou Azure. AWS ou Azure sont exactement les fournisseurs utilisés par les fournisseurs de services centralisés uniques qui ont besoin d'une grande échelle, et même alors, pas seulement ces deux-là. Pour les serveurs de relais plus petits, n'importe quel VPS fera très bien l'affaire.
 
+## Spécification du protocole
+
+Voir les [NIPs](https://github.com/nostr-protocol/nips) et en particulier [NIP-01](https://github.com/nostr-protocol/nips/blob/master/01.md) pour une explication raisonnablement détaillée de la spécification du protocole (indice: elle est très courte et simple).
+
+## Logiciel
+
+Il y a une liste de la plupart des logiciels construits en utilisant Nostr sur https://github.com/aljazceru/awesome-nostr qui semblait être presque complète la dernière fois que j'ai regardé.
+
+## Licence
+
+Domaine public.
