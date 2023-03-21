@@ -1,4 +1,4 @@
-Translate content into other languages
+Content in other languages
 
 | Japanese | Chinese | Spanish |
 | -------- | -------- | -------- |
