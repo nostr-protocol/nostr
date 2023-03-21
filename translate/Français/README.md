@@ -69,3 +69,46 @@ Tout le monde exécute un client. Il peut s'agir d'un client natif, d'un client 
   - Si quelqu'un est banni de nombreux relais de sorte qu'il ne peut pas faire diffuser ses recommandations de serveur, il peut toujours informer quelques amis proches par d'autres moyens sur le relais sur lequel il publie maintenant. Ensuite, ces amis proches peuvent publier des recommandations de serveur vers ce nouveau serveur, et lentement, l'ancienne base de suiveurs de l'utilisateur banni commencera à trouver ses publications à nouveau depuis le nouveau relais.
   - Tout ce qui précède est également valable lorsque qu'un relais cesse ses opérations.
 
+- **Résistance à la censure**
+  - Chaque utilisateur peut publier ses mises à jour sur un nombre quelconque de relais.
+  - Un relais peut facturer des frais (la négociation de ces frais est actuellement en dehors du protocole) aux utilisateurs pour publier sur le relais, ce qui garantit la résistance à la censure (il y aura toujours un serveur russe prêt à prendre votre argent en échange de la diffusion de vos publications).
+
+- **Spam**
+  - Si le spam est une préoccupation pour un relais, il peut exiger un paiement pour la publication ou une autre forme d'authentification, comme une adresse e-mail ou un numéro de téléphone, et les associer internement avec une clé publique qui sera autorisée à publier sur ce relais - ou d'autres techniques anti-spam, comme hashcash ou des captchas. Si un relais est utilisé comme vecteur de spam, il peut facilement être retiré de la liste des clients, qui peuvent continuer à récupérer des mises à jour à partir d'autres relais.
+
+- **Stockage de données**
+  - Pour que le réseau reste sain, il n'est pas nécessaire d'avoir des centaines de relais actifs. En fait, il peut fonctionner parfaitement avec seulement quelques-uns, étant donné que de nouveaux relais peuvent être créés et diffusés facilement dans le réseau au cas où les relais existants commenceraient à mal fonctionner. Par conséquent, la quantité de stockage de données requise, en général, est relativement moins importante que celle de Mastodon ou de logiciels similaires.
+  - Ou en envisageant un résultat différent: celui où il existe des centaines de relais de niche gérés par des amateurs, chacun relayant les mises à jour d'un petit groupe d'utilisateurs. L'architecture fonctionne tout aussi bien: les données sont envoyées des utilisateurs à un seul serveur, et de ce serveur directement aux utilisateurs qui les consommeront. Elles ne doivent pas être stockées par quelqu'un d'autre. Dans cette situation, ce n'est pas un gros fardeau pour un seul serveur de traiter les mises à jour des autres, et avoir des serveurs amateurs n'est pas un problème.
+
+- **Vidéos et autres contenus lourds**
+  - Il est facile pour un relais de rejeter les contenus volumineux ou de facturer leur acceptation et leur hébergement. Lorsque les informations et les incitations sont claires, il est facile pour les forces du marché de résoudre le problème.
+
+- **Techniques pour tromper l'utilisateur**
+  - Chaque client peut décider de la meilleure façon de présenter les publications aux utilisateurs, de sorte qu'il y a toujours la possibilité de ne consommer que ce que vous voulez de la manière que vous souhaitez, que ce soit en utilisant une IA pour décider de l'ordre des mises à jour que vous verrez ou en les lisant simplement dans l'ordre chronologique.
+
+## FAQ
+
+- **C'est très simple. Pourquoi personne ne l'a fait auparavant ?**
+
+  Je ne sais pas, mais j'imagine que cela a à voir avec le fait que les personnes qui créent des réseaux sociaux sont soit des entreprises qui veulent gagner de l'argent, soit des militants P2P qui veulent créer une chose complètement sans serveurs. Ils ne parviennent pas à voir le mélange spécifique des deux mondes qu'utilise Nostr.
+
+- **Comment trouver des personnes à suivre ?**
+
+  Tout d'abord, vous devez les connaître et obtenir leur clé publique, soit en demandant soit en la voyant quelque part. Une fois que vous êtes à l'intérieur d'un réseau social Nostr, vous pourrez les voir interagir avec d'autres personnes et vous pourrez alors commencer à suivre et à interagir avec ces autres.
+
+- **Comment trouver des relais ? Que se passe-t-il si je ne suis pas connecté aux mêmes relais que quelqu'un d'autre ?**
+
+  Vous ne pourrez pas communiquer avec cette personne. Mais il y a des indices sur des événements qui peuvent être utilisés pour que votre logiciel client (ou vous, manuellement) sache comment se connecter au relais de l'autre personne et interagir avec elle. Il y a d'autres idées sur la façon de résoudre cela dans le futur, mais nous ne pouvons jamais promettre une accessibilité parfaite, aucun protocole ne peut le garantir.
+
+- **Puis-je savoir combien de personnes me suivent ?**
+
+  Non, mais vous pouvez obtenir des estimations si les relais coopèrent d'une manière extra-protocolaire.
+
+- **Quel est l'incitatif pour les gens de faire fonctionner des relais ?**
+
+  La question est trompeuse. Elle suppose que les relais sont des tuyaux muets gratuits qui existent pour que les gens puissent déplacer des données à travers eux. Dans ce cas, oui, les incitations n'existeraient pas. Cela pourrait en fait être dit des nœuds DHT dans toutes les autres piles de réseaux p2p : quel est l'incitatif pour les gens de faire fonctionner des nœuds DHT ?
+
+- **Nostr vous permet de passer d'un relais à un autre ou d'utiliser plusieurs relais, mais s'ils sont simplement sur AWS ou Azure, quelle est la différence ?**
+
+  Il y a littéralement des milliers de fournisseurs de VPS dispersés partout dans le monde aujourd'hui, il n'y a pas seulement AWS ou Azure. AWS ou Azure sont exactement les fournisseurs utilisés par les fournisseurs de services centralisés uniques qui ont besoin d'une grande échelle, et même alors, pas seulement ces deux-là. Pour les serveurs de relais plus petits, n'importe quel VPS fera très bien l'affaire.
+
