@@ -78,3 +78,46 @@ Todo el mundo ejecuta un cliente. Puede ser un cliente nativo, un cliente web, e
   - Para que la red funcione correctamente, no se necesitan cientos de relays activos. De hecho, puede funcionar perfectamente bien con solo unos pocos, dado que nuevos relays pueden crearse y propagarse fácilmente en la red en caso de que los relays existentes comiencen a comportarse mal. Por lo tanto, la cantidad de almacenamiento de datos requerido, en general, es relativamente menor que en Mastodon u otro software similar.
   - O considerando un resultado diferente: uno en el que existen cientos de relays de nicho administrados por aficionados, cada uno transmitiendo actualizaciones de un pequeño grupo de usuarios. La arquitectura también es escalable: los datos se envían desde los usuarios a un servidor único y desde ese servidor directamente a los usuarios que los consumirán. No es necesario que nadie más los almacene. En esta situación, no es una gran carga para ningún servidor procesar actualizaciones de otros, y tener servidores de aficionados no es un problema.
 
+- **Video y otro contenido pesado**
+  - Es fácil para un relay rechazar contenido grande o cobrar por aceptar y alojar contenido grande. Cuando la información y los incentivos son claros, es fácil para las fuerzas del mercado resolver el problema.
+
+- **Técnicas para engañar al usuario**
+  - Cada cliente puede decidir cómo mostrar mejor las publicaciones a los usuarios, por lo que siempre está la opción de consumir solo lo que desee de la manera que desee, desde usar una inteligencia artificial para decidir el orden de las actualizaciones que verá hasta simplemente leerlas en orden cronológico.
+
+## Preguntas frecuentes
+
+- **Esto es muy simple. ¿Por qué nadie lo ha hecho antes?**
+
+  No lo sé, pero imagino que tiene que ver con el hecho de que las personas que crean redes sociales son empresas que quieren ganar dinero o activistas P2P que quieren hacer una cosa completamente sin servidores. Ambos no ven la mezcla específica de ambos mundos que utiliza Nostr.
+
+- **¿Cómo encuentro personas a las que seguir?**
+
+  Primero, debes conocerlas y obtener su clave pública de alguna manera, ya sea preguntándoles o viéndola referenciada en algún lugar. Una vez que estás dentro de una red social de Nostr, podrás verlas interactuando con otras personas y así también puedes empezar a seguir e interactuar con estos otros.
+
+- **¿Cómo encuentro relays? ¿Qué sucede si no estoy conectado a los mismos relays que alguien más?**
+
+  No podrás comunicarte con esa persona. Pero hay pistas en eventos que se pueden utilizar para que tu software cliente (o tú manualmente) sepa cómo conectarse al relay de la otra persona e interactuar con ella. Hay otras ideas sobre cómo resolver esto en el futuro, pero nunca podemos prometer una accesibilidad perfecta, ningún protocolo puede hacerlo.
+
+- **¿Puedo saber cuántas personas me siguen?**
+
+  No, pero puedes obtener algunas estimaciones si los relays cooperan de manera extra-protocolo.
+
+- **¿Qué incentivo hay para que la gente ejecute relays?**
+
+  La pregunta es engañosa. Parte de la premisa de que los relays son tuberías tontas gratuitas que existen para que la gente pueda mover datos a través de ellas. En este caso, es cierto que no habría incentivos. Esto podría decirse de los nodos DHT en todas las otras pilas de redes p2p: ¿qué incentivo hay para que la gente ejecute nodos DHT?
+
+- **Nostr te permite moverte entre los relays del servidor o usar múltiples relays, pero si estos relays están en AWS o Azure, ¿cuál es la diferencia?**
+
+  Literalmente hay miles de proveedores de VPS repartidos por todo el mundo hoy en día, no solo AWS o Azure. AWS o Azure son precisamente los proveedores utilizados por los proveedores de servicios centralizados únicos que necesitan mucha escala, y aun así no solo estos dos. Para los servidores de relay más pequeños, cualquier VPS hará perfectamente el trabajo.
+
+## Especificación del protocolo
+
+Consulte los [NIPs](https://github.com/nostr-protocol/nips) y especialmente [NIP-01](https://github.com/nostr-protocol/nips/blob/master/01.md) para obtener una explicación razonablemente detallada de la especificación del protocolo (pista: es muy corta y simple).
+
+## Software
+
+Hay una lista de la mayoría del software que se está construyendo utilizando Nostr en https://github.com/aljazceru/awesome-nostr que parecía estar casi completa la última vez que lo miré.
+
+## Licencia
+
+Dominio público.
