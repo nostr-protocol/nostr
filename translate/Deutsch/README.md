@@ -80,3 +80,28 @@ Jeder führt einen Client aus. Es kann ein nativer Client, ein Web-Client usw. s
   - Damit das Netzwerk gesund bleibt, ist es nicht notwendig, Hunderte von aktiven Relais zu haben. Tatsächlich kann es auch mit nur einer Handvoll funktionieren, da neue Relais leicht erstellt und im Netzwerk verbreitet werden können, falls die vorhandenen Relais anfangen, sich schlecht zu verhalten. Daher ist der allgemeine Bedarf an Datenspeicherung im Vergleich zu Mastodon oder ähnlicher Software relativ gering.
   - Oder betrachten wir ein anderes Szenario: eines, in dem es Hunderte von Nischenrelais gibt, die von Amateuren betrieben werden und jeweils Updates von einer kleinen Gruppe von Benutzern weiterleiten. Die Architektur skaliert genauso gut: Daten werden von Benutzern an einen einzelnen Server gesendet und von diesem Server direkt an die Benutzer, die diese Daten konsumieren werden. Es muss von niemand anderem gespeichert werden. In dieser Situation ist es für keinen einzelnen Server eine große Belastung, Updates von anderen zu verarbeiten, und das Vorhandensein von Amateurservern ist kein Problem.
 
+- **Video und anderer umfangreicher Inhalt**
+  - Es ist einfach für ein Relais, große Inhalte abzulehnen oder für das Akzeptieren und Hosten großer Inhalte Gebühren zu erheben. Wenn Informationen und Anreize klar sind, können die Marktkräfte das Problem leicht lösen.
+
+- **Techniken, um den Benutzer zu täuschen**
+  - Jeder Client kann entscheiden, wie Beiträge am besten den Benutzern angezeigt werden, sodass immer die Möglichkeit besteht, nur das zu konsumieren, was Sie möchten, und das auf die gewünschte Weise - von der Verwendung einer KI zur Entscheidung über die Reihenfolge der Updates, die Sie sehen werden, bis hin zum einfachen chronologischen Lesen.
+
+## Häufig gestellte Fragen (FAQ)
+
+- **Das ist sehr einfach. Warum hat das bisher niemand gemacht?**
+
+  Ich weiß es nicht, aber ich stelle mir vor, dass es damit zu tun hat, dass Menschen, die soziale Netzwerke erstellen, entweder Unternehmen sind, die Geld verdienen wollen, oder P2P-Aktivisten, die eine Sache komplett ohne Server erstellen möchten. Beide übersehen die spezielle Mischung aus beiden Welten, die Nostr verwendet.
+
+
+- **Wie finde ich Leute, denen ich folgen kann?**
+
+  Zuerst müssen Sie sie kennen und irgendwie ihren öffentlichen Schlüssel erhalten, entweder durch Nachfragen oder indem Sie ihn irgendwo referenziert sehen. Sobald Sie in einem Nostr-Sozialnetzwerk sind, können Sie sie mit anderen Personen interagieren sehen und dann können Sie auch anfangen, diesen anderen zu folgen und mit ihnen zu interagieren.
+
+- **Wie finde ich Relais? Was passiert, wenn ich nicht mit denselben Relais verbunden bin wie jemand anderes?**
+
+  Sie können nicht mit dieser Person kommunizieren. Es gibt jedoch Hinweise auf Ereignisse, die verwendet werden können, damit Ihre Client-Software (oder Sie manuell) weiß, wie sie sich mit dem Relais der anderen Person verbinden und mit ihnen interagieren kann. Es gibt auch andere Ideen, wie man dieses Problem in Zukunft lösen kann, aber wir können niemals eine perfekte Erreichbarkeit versprechen, das kann kein Protokoll.
+
+- **Kann ich wissen, wie viele Leute mir folgen?**
+
+  Nein, aber Sie können einige Schätzungen erhalten, wenn Relais in einer außerprotokollarischen Weise zusammenarbeiten.
+
