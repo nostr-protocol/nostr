@@ -50,3 +50,33 @@ Jeder führt einen Client aus. Es kann ein nativer Client, ein Web-Client usw. s
 
 - Sie erfordern, dass jeder seinen eigenen Server betreibt;
 - Manchmal können Menschen trotzdem zensiert werden, weil Domainnamen zensiert werden können.
+
+## Wie funktioniert Nostr?
+
+- Es gibt zwei Komponenten: __Clients__ und __Relais__. Jeder Benutzer führt einen Client aus. Jeder kann ein Relais betreiben.
+- Jeder Benutzer wird durch einen öffentlichen Schlüssel identifiziert. Jeder Beitrag ist signiert. Jeder Client validiert diese Signaturen.
+- Clients holen Daten von Relais ihrer Wahl und veröffentlichen Daten auf anderen Relais ihrer Wahl. Ein Relais kommuniziert nicht mit einem anderen Relais, sondern nur direkt mit Benutzern.
+- Um zum Beispiel jemandem zu "folgen", weist ein Benutzer seinen Client einfach an, die ihm bekannten Relais nach Beiträgen von diesem öffentlichen Schlüssel zu durchsuchen.
+- Beim Start fragt ein Client Daten von allen Relais ab, die er kennt, für alle Benutzer, denen er folgt (zum Beispiel alle Updates vom letzten Tag), und zeigt diese Daten dem Benutzer chronologisch an.
+- Ein "Beitrag" kann jede Art von strukturierten Daten enthalten, aber die am häufigsten verwendeten werden in den Standard aufgenommen, damit alle Clients und Relais sie nahtlos verarbeiten können.
+
+## Wie löst es die Probleme, die die oben genannten Netzwerke nicht lösen können?
+
+- **Benutzer werden gesperrt und Server geschlossen**
+  - Ein Relais kann einen Benutzer daran hindern, dort etwas zu veröffentlichen, aber das hat keine Auswirkungen auf ihn, da er immer noch auf anderen Relais veröffentlichen kann. Da Benutzer durch einen öffentlichen Schlüssel identifiziert werden, verlieren sie nicht ihre Identität und ihre Follower-Basis, wenn sie gesperrt werden.
+  - Anstatt von Benutzern zu verlangen, manuell neue Relaisadressen einzugeben (obwohl dies auch unterstützt werden sollte), sollte der Client automatisch eine Serverempfehlung zur Liste der abzufragenden Relais hinzufügen, wenn jemand, dem Sie folgen, eine Serverempfehlung veröffentlicht.
+  - Wenn jemand ein Relais zum Veröffentlichen seiner Daten verwendet, aber zu einem anderen wechseln möchte, kann er eine Serverempfehlung an das vorherige Relais veröffentlichen und gehen;
+  - Wenn jemand von so vielen Relais gesperrt wird, dass er seine Serverempfehlungen nicht mehr verbreiten kann, kann er trotzdem einige enge Freunde auf anderem Wege darüber informieren, auf welchem Relais er jetzt veröffentlicht. Diese engen Freunde können dann Serverempfehlungen zu diesem neuen Server veröffentlichen, und langsam wird die alte Follower-Basis des gesperrten Benutzers wieder Beiträge von dem neuen Relais finden.
+  - All dies gilt auch, wenn ein Relais seinen Betrieb einstellt.
+
+- **Zensurresistenz**
+  - Jeder Benutzer kann seine Updates auf beliebig vielen Relais veröffentlichen.
+  - Ein Relais kann eine Gebühr verlangen (die Verhandlung dieser Gebühr liegt vorerst außerhalb des Protokolls) von Benutzern, um dort zu veröffentlichen, was die Zensurresistenz sicherstellt (es wird immer einen russischen Server geben, der bereit ist, Ihr Geld im Austausch für das Bereitstellen Ihrer Beiträge zu nehmen).
+
+- **Spam**
+  - Wenn Spam für ein Relais ein Problem ist, kann es eine Zahlung für die Veröffentlichung oder eine andere Form der Authentifizierung verlangen, wie zum Beispiel eine E-Mail-Adresse oder Telefonnummer, und diese intern mit einem Pubkey verknüpfen, der dann auf diesem Relais veröffentlichen darf – oder andere Anti-Spam-Techniken wie Hashcash oder Captchas. Wenn ein Relais als Spam-Vektor verwendet wird, kann es leicht von Clients von der Liste genommen werden, die weiterhin Updates von anderen Relais abrufen können.
+
+- **Datenspeicherung**
+  - Damit das Netzwerk gesund bleibt, ist es nicht notwendig, Hunderte von aktiven Relais zu haben. Tatsächlich kann es auch mit nur einer Handvoll funktionieren, da neue Relais leicht erstellt und im Netzwerk verbreitet werden können, falls die vorhandenen Relais anfangen, sich schlecht zu verhalten. Daher ist der allgemeine Bedarf an Datenspeicherung im Vergleich zu Mastodon oder ähnlicher Software relativ gering.
+  - Oder betrachten wir ein anderes Szenario: eines, in dem es Hunderte von Nischenrelais gibt, die von Amateuren betrieben werden und jeweils Updates von einer kleinen Gruppe von Benutzern weiterleiten. Die Architektur skaliert genauso gut: Daten werden von Benutzern an einen einzelnen Server gesendet und von diesem Server direkt an die Benutzer, die diese Daten konsumieren werden. Es muss von niemand anderem gespeichert werden. In dieser Situation ist es für keinen einzelnen Server eine große Belastung, Updates von anderen zu verarbeiten, und das Vorhandensein von Amateurservern ist kein Problem.
+
