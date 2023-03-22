@@ -105,3 +105,22 @@ Jeder führt einen Client aus. Es kann ein nativer Client, ein Web-Client usw. s
 
   Nein, aber Sie können einige Schätzungen erhalten, wenn Relais in einer außerprotokollarischen Weise zusammenarbeiten.
 
+- **Welchen Anreiz gibt es für Menschen, Relais zu betreiben?**
+
+  Die Frage ist irreführend. Sie geht davon aus, dass Relais kostenlose, dumme Rohre sind, die existieren, damit die Menschen Daten über sie hinweg bewegen können. In diesem Fall gäbe es tatsächlich keine Anreize. Dies könnte tatsächlich auch für DHT-Knoten in allen anderen P2P-Netzwerkstacks gesagt werden: Welchen Anreiz gibt es für Menschen, DHT-Knoten zu betreiben?
+
+- **Nostr ermöglicht Ihnen, zwischen Server-Relais zu wechseln oder mehrere Relais zu nutzen, aber wenn diese Relais nur auf AWS oder Azure sind, was ist der Unterschied?**
+
+  Es gibt heute buchstäblich Tausende von VPS-Anbietern, die auf der ganzen Welt verstreut sind, nicht nur AWS oder Azure. AWS oder Azure sind genau die Anbieter, die von zentralisierten Dienstleistern verwendet werden, die eine große Skalierung benötigen, und selbst dann nicht nur diese beiden. Für kleinere Relais-Server wird jeder VPS die Arbeit sehr gut erledigen.
+
+## Protokollspezifikation
+
+Sehen Sie sich die [NIPs](https://github.com/nostr-protocol/nips) und insbesondere [NIP-01](https://github.com/nostr-protocol/nips/blob/master/01.md) für eine angemessen detaillierte Erklärung der Protokollspezifikation an (Hinweis: sie ist sehr kurz und einfach).
+
+## Software
+
+Es gibt eine Liste der meisten Software, die mit Nostr entwickelt wird, auf https://github.com/aljazceru/awesome-nostr, die beim letzten Mal, als ich nachgesehen habe, fast vollständig zu sein schien.
+
+## Lizenz
+
+Gemeinfrei.
