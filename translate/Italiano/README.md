@@ -1,8 +1,6 @@
 # nostr - Note e Altre Cose Trasmesse dai Relay
 > Notes and Other Stuff Transmitted by Relays
 
-# nostr - Note e Altre Cose Trasmesse dai Relay
-
 Il protocollo aperto più semplice in grado di creare una volta per tutte una rete "sociale" globale resistente alla censura.
 
 Non si basa su alcun server centrale di fiducia, quindi è resiliente; si basa su chiavi e firme crittografiche, quindi è a prova di manomissione; non si basa su tecniche P2P e quindi funziona.
