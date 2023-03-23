@@ -38,3 +38,56 @@ Todo mundo executa um cliente. Pode ser um cliente nativo, um cliente web, etc. 
 - Não faz sentido ter uma tonelada de servidores se as atualizações de todos os servidores tiverem que ser dolorosamente enviadas (e salvas!) para uma tonelada de outros servidores. Este ponto é exacerbado pelo fato de que os servidores tendem a existir em grande número, portanto, mais dados precisam ser repassados para mais lugares com mais frequência;
 - Para o exemplo específico de compartilhamento de vídeo, os entusiastas do ActivityPub perceberam que seria completamente impossível transmitir vídeo de servidor para servidor da mesma forma que as notas de texto, então decidiram manter o vídeo hospedado apenas na instância única em que foi postado, o que é semelhante à abordagem do Nostr.
 
+## Como funciona o Nostr?
+
+- Existem dois componentes: __clientes__ e __retransmissores__. Cada usuário executa um cliente. Qualquer um pode executar um retransmissor.
+- Cada usuário é identificado por uma chave pública. Cada postagem é assinada. Cada cliente valida essas assinaturas.
+- Os clientes buscam dados dos retransmissores de sua escolha e publicam dados em outros retransmissores de sua escolha. Um retransmissor não se comunica com outro retransmissor, apenas diretamente com os usuários.
+- Por exemplo, para "seguir" alguém, um usuário simplesmente instrui seu cliente a consultar os retransmissores que conhece em busca de postagens dessa chave pública.
+- Na inicialização, um cliente consulta dados de todos os retransmissores que conhece para todos os usuários que segue (por exemplo, todas as atualizações do último dia) e, em seguida, exibe esses dados para o usuário em ordem cronológica.
+- Uma "postagem" pode conter qualquer tipo de dado estruturado, mas os mais usados encontrarão seu caminho no padrão para que todos os clientes e retransmissores possam lidar com eles de forma contínua.
+
+## Como isso resolve os problemas que as redes acima não conseguem?
+
+- **Usuários sendo banidos e servidores sendo fechados**
+  - Um retransmissor pode bloquear um usuário para evitar que ele publique qualquer coisa lá, mas isso não afeta o usuário, já que ele ainda pode publicar em outros retransmissores. Como os usuários são identificados por uma chave pública, eles não perdem suas identidades e sua base de seguidores quando são banidos.
+  - Em vez de exigir que os usuários digitem manualmente os novos endereços de retransmissores (embora isso também deva ser suportado), sempre que alguém que você está seguindo postar uma recomendação de servidor, o cliente deve adicionar automaticamente essa recomendação à lista de retransmissores que ele consultará.
+  - Se alguém estiver usando um retransmissor para publicar seus dados, mas desejar migrar para outro, pode publicar uma recomendação de servidor no retransmissor anterior e ir embora;
+  - Se alguém for banido de muitos retransmissores a ponto de não conseguir transmitir suas recomendações de servidores, ainda poderá avisar alguns amigos próximos por outros meios em qual retransmissor está publicando agora. Então, esses amigos próximos podem publicar recomendações de servidores para esse novo servidor, e aos poucos, a antiga base de seguidores do usuário banido começará a encontrar suas postagens novamente no novo retransmissor.
+  - Tudo o que foi mencionado acima também é válido para quando um retransmissor encerra suas operações.
+
+- **Resistência à censura**
+  - Cada usuário pode publicar suas atualizações em qualquer número de retransmissores.
+  - Um retransmissor pode cobrar uma taxa (a negociação dessa taxa está fora do protocolo por enquanto) dos usuários para publicar lá, o que garante resistência à censura (sempre haverá algum servidor russo disposto a receber seu dinheiro em troca de veicular suas postagens).
+
+- **Spam**
+  - Se o spam for uma preocupação para um retransmissor, ele pode exigir pagamento pela publicação ou alguma outra forma de autenticação, como um endereço de e-mail ou telefone, e associar internamente esses dados a uma chave pública que pode publicar nesse retransmissor - ou outras técnicas anti-spam, como hashcash ou captchas. Se um retransmissor estiver sendo usado como vetor de spam, ele pode ser facilmente retirado da lista pelos clientes, que podem continuar a buscar atualizações de outros retransmissores.
+
+- **Armazenamento de dados**
+  - Para que a rede permaneça saudável, não há necessidade de centenas de retransmissores ativos. Na verdade, pode funcionar muito bem com apenas alguns, dado o fato de que novos retransmissores podem ser criados e espalhados pela rede facilmente, caso os retransmissores existentes comecem a se comportar mal. Portanto, a quantidade de armazenamento de dados necessário, em geral, é relativamente menor do que Mastodon ou software similar.
+  - Ou considerando um resultado diferente: um em que existam centenas de retransmissores de nicho administrados por amadores, cada um retransmitindo atualizações de um pequeno grupo de usuários. A arquitetura escala igualmente bem: os dados são enviados dos usuários para um único servidor e, desse servidor, diretamente para os usuários que consumirão isso. Não precisa ser armazenado por mais ninguém. Nessa situação, não é um grande fardo para um único servidor processar atualizações de outros, e ter servidores amadores não é um problema.
+
+- **Vídeo e outros conteúdos pesados**
+  - É fácil para um retransmissor rejeitar conteúdo grande ou cobrar por aceitar e hospedar conteúdo grande. Quando as informações e incentivos são claros, é fácil para as forças do mercado resolverem o problema.
+
+- **Técnicas para enganar o usuário**
+  - Cada cliente pode decidir como melhor mostrar as postagens aos usuários, então sempre há a opção de apenas consumir o que você deseja da maneira que desejar - desde usar uma IA para decidir a ordem das atualizações que você verá até lê-las em ordem cronológica.
+
+## FAQ
+
+- **Isso é muito simples. Por que ninguém fez isso antes?**
+
+  Eu não sei, mas imagino que isso tenha a ver com o fato de que as pessoas que criam redes sociais são ou empresas querendo ganhar dinheiro ou ativistas P2P que desejam criar algo completamente sem servidores. Ambos falham em perceber a mistura específica de ambos os mundos que o Nostr utiliza.
+
+- **Como encontro pessoas para seguir?**
+
+  Primeiro, você deve conhecê-las e obter a chave pública delas de alguma forma, seja perguntando ou vendo-a referenciada em algum lugar. Uma vez que você esteja dentro de uma rede social Nostr, você poderá vê-las interagindo com outras pessoas e então também poderá começar a seguir e interagir com esses outros.
+
+- **Como encontro retransmissores? O que acontece se eu não estiver conectado aos mesmos retransmissores que outra pessoa?**
+
+  Você não conseguirá se comunicar com essa pessoa. Mas há dicas em eventos que podem ser usadas para que seu software cliente (ou você, manualmente) saiba como se conectar ao retransmissor da outra pessoa e interagir com ela. Há outras ideias sobre como resolver isso também no futuro, mas nunca podemos prometer alcançabilidade perfeita, nenhum protocolo pode.
+
+- **Posso saber quantas pessoas estão me seguindo?**
+
+  Não, mas você pode obter algumas estimativas se os retransmissores cooperarem de forma extra-protocolar.
+
