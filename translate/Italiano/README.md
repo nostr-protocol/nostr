@@ -69,3 +69,57 @@ Tutti eseguono un client. Può essere un client nativo, un client web, ecc. Per 
   - Se qualcuno viene bannato da molti relay in modo tale da non poter trasmettere le loro raccomandazioni di server, può comunque far sapere ad alcuni amici stretti tramite altri mezzi con quale relay sta pubblicando ora. Quindi, questi amici stretti possono pubblicare raccomandazioni di server su quel nuovo server e, lentamente, la vecchia base di follower dell'utente bannato inizierà a trovare di nuovo i loro post dal nuovo relay.
   - Tutto quanto sopra è valido anche quando un relay cessa le sue operazioni.
 
+- **Resistenza alla censura**
+  - Ogni utente può pubblicare i propri aggiornamenti su un qualsiasi numero di relay.
+  - Un relay può richiedere una tariffa (la negoziazione di tale tariffa è al di fuori del protocollo per ora) agli utenti per pubblicare lì, il che garantisce la resistenza alla censura (ci sarà sempre qualche server russo disposto a prendere i tuoi soldi in cambio della pubblicazione dei tuoi post).
+
+- **Spam**
+  - Se lo spam è una preoccupazione per un relay, può richiedere un pagamento per la pubblicazione o un'altra forma di autenticazione, come un indirizzo e-mail o telefono, e associare internamente questi ad una pubkey che poi ottiene la pubblicazione su quel relay - o altre tecniche anti-spam, come hashcash o captcha. Se un relay viene utilizzato come vettore di spam, può essere facilmente eliminato dai client, che possono continuare a recuperare aggiornamenti da altri relay.
+
+- **Archiviazione dati**
+  - Perché la rete rimanga in salute, non è necessario avere centinaia di relay attivi. Infatti, può funzionare benissimo con solo una manciata, dato il fatto che nuovi relay possono essere creati e diffusi attraverso la rete facilmente nel caso in cui i relay esistenti inizino a comportarsi male. Pertanto, la quantità di archiviazione dati richiesta, in generale, è relativamente inferiore rispetto a Mastodon o software simili.
+  - Oppure considerando un risultato diverso: uno in cui esistono centinaia di relay di nicchia gestiti da dilettanti, ognuno che trasmette aggiornamenti da un piccolo gruppo di utenti. L'architettura scala altrettanto bene: i dati vengono inviati dagli utenti a un singolo server e da quel server direttamente agli utenti che li consumeranno. Non deve essere memorizzato da nessun altro. In questa situazione, non è un grosso peso per un singolo server elaborare aggiornamenti da altri, e avere server amatoriali non è un problema.
+
+- **Video e altri contenuti pesanti**
+  - È facile per un relay rifiutare contenuti di grandi dimensioni o addebitare una tariffa per accettare e ospitare contenuti di grandi dimensioni. Quando le informazioni e gli incentivi sono chiari, è facile per le forze di mercato risolvere il problema.
+
+- **Tecniche per ingannare l'utente**
+  - Ogni client può decidere come mostrare al meglio i post agli utenti, quindi c'è sempre l'opzione di consumare ciò che si desidera nel modo desiderato - dall'utilizzare un'intelligenza artificiale per decidere l'ordine degli aggiornamenti che vedrai al semplice leggerli in ordine cronologico.
+
+## FAQ
+
+- **Questo è molto semplice. Perché nessuno l'ha fatto prima?**
+
+  Non lo so, ma immagino che abbia a che fare con il fatto che le persone che creano reti sociali sono o aziende che vogliono fare soldi o attivisti P2P che vogliono realizzare qualcosa completamente senza server. Entrambi non riescono a vedere la specifica combinazione di entrambi i mondi che Nostr utilizza.
+
+- **Come faccio a trovare persone da seguire?**
+
+  Innanzitutto, devi conoscerle e ottenere in qualche modo la loro chiave pubblica, sia chiedendola sia vedendola citata da qualche parte. Una volta che sei all'interno di una rete sociale Nostr, potrai vederle interagire con altre persone e quindi potrai anche iniziare a seguire e interagire con queste altre.
+
+- **Come faccio a trovare i relay? Cosa succede se non sono connesso agli stessi relay di qualcun altro?**
+
+  Non sarai in grado di comunicare con quella persona. Ma ci sono suggerimenti sugli eventi che possono essere utilizzati in modo che il tuo software client (o tu, manualmente) sappia come connettersi al relay dell'altra persona e interagire con loro. Ci sono altre idee su come risolvere questo problema anche in futuro, ma non possiamo mai promettere una raggiungibilità perfetta, nessun protocollo può.
+
+- **Posso sapere quante persone mi stanno seguendo?**
+
+  No, ma puoi avere delle stime se i relay cooperano in un modo extra-protocollo.
+
+- **Qual è l'incentivo per le persone a gestire i relay?**
+
+  La domanda è fuorviante. Presuppone che i relay siano tubi stupidi gratuiti che esistono in modo che le persone possano spostare i dati attraverso di essi. In questo caso sì, gli incentivi non esisterebbero. Questo, infatti, potrebbe essere detto dei nodi DHT in tutte le altre pile di reti p2p: qual è l'incentivo per le persone a gestire i nodi DHT?
+
+- **Nostr ti permette di spostarti tra i relay server o utilizzare più relay, ma se questi relay sono solo su AWS o Azure qual è la differenza?**
+
+  Ci sono letteralmente migliaia di fornitori di VPS sparsi in tutto il mondo oggi, non ci sono solo AWS o Azure. AWS o Azure sono esattamente i fornitori utilizzati dai singoli fornitori di servizi centralizzati che necessitano di molta scalabilità e, anche in questo caso, non solo questi due. Per i relay server più piccoli, qualsiasi VPS farà molto bene il lavoro.
+
+## Specifiche del protocollo
+
+Consulta le [NIPs](https://github.com/nostr-protocol/nips) e in particolare [NIP-01](https://github.com/nostr-protocol/nips/blob/master/01.md) per una spiegazione ragionevolmente dettagliata delle specifiche del protocollo (suggerimento: è molto breve e semplice).
+
+## Software
+
+C'è una lista della maggior parte del software in costruzione usando Nostr su https://github.com/aljazceru/awesome-nostr che sembrava essere quasi completa l'ultima volta che ho guardato.
+
+## Licenza
+
+Pubblico dominio.
