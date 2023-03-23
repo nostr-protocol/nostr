@@ -91,3 +91,22 @@ Todo mundo executa um cliente. Pode ser um cliente nativo, um cliente web, etc. 
 
   Não, mas você pode obter algumas estimativas se os retransmissores cooperarem de forma extra-protocolar.
 
+- **Qual incentivo existe para as pessoas executarem retransmissores?**
+
+  A pergunta é enganosa. Ela pressupõe que os retransmissores são tubos burros e gratuitos que existem para que as pessoas possam movimentar dados através deles. Nesse caso, sim, os incentivos não existiriam. Isso, de fato, poderia ser dito sobre os nós DHT em todas as outras pilhas de redes p2p: qual incentivo existe para as pessoas executarem nós DHT?
+
+- **Nostr permite que você se mova entre retransmissores de servidores ou use vários retransmissores, mas se esses retransmissores estiverem apenas na AWS ou Azure, qual é a diferença?**
+
+  Existem literalmente milhares de provedores de VPS espalhados por todo o mundo hoje, não existem apenas AWS ou Azure. AWS ou Azure são exatamente os provedores usados ​​por provedores de serviços centralizados que precisam de muita escala e, mesmo assim, não apenas esses dois. Para servidores de retransmissão menores, qualquer VPS fará o trabalho muito bem.
+
+## Especificação do protocolo
+
+Consulte os [NIPs](https://github.com/nostr-protocol/nips) e especialmente o [NIP-01](https://github.com/nostr-protocol/nips/blob/master/01.md) para uma explicação razoavelmente detalhada da especificação do protocolo (dica: é muito curto e simples).
+
+## Software
+
+Há uma lista da maioria dos softwares sendo construídos usando Nostr em https://github.com/aljazceru/awesome-nostr que parecia estar quase completa na última vez que olhei.
+
+## Licença
+
+Domínio público.
