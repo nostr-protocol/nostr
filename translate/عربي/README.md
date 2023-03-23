@@ -1,2 +1,3 @@
-# nostr - ملاحظات وأشياء أخرى مرسلة عبر الأرجحية
+# nostr - ملاحظات وأشياء أخرى تُبث عبر المُرسِلات
 > Notes and Other Stuff Transmitted by Relays
+
