@@ -1,2 +1,2 @@
-# nostr - Notes and Other Stuff Transmitted by Relays
+# nostr - Note e Altre Cose Trasmesse dai Relay
 > Notes and Other Stuff Transmitted by Relays
