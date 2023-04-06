@@ -119,6 +119,12 @@ See the [NIPs](https://github.com/nostr-protocol/nips) and especially [NIP-01](h
 
 There is a list of most software being built using Nostr on https://github.com/aljazceru/awesome-nostr that seemed to be almost complete last time I looked.
 
+## Contributors
+
+<a align="center" href="https://github.com/nostr-protocol/nostr/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=nostr-protocol/nostr" />
+</a>
+
 ## License
 
 Public domain.
