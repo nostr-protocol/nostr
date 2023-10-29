@@ -10,11 +10,11 @@ This is a work in progress. [Join the Telegram group!](https://t.me/nostr_protoc
 
 Everybody runs a client. It can be a native client, a web client, etc. To publish something, you write a post, sign it with your key and send it to multiple relays (servers hosted by someone else, or yourself). To get updates from other people, you ask multiple relays if they know anything about these other people. Anyone can run a relay. A relay is very simple and dumb. It does nothing besides accepting posts from some people and forwarding to others. Relays don't have to be trusted. Signatures are verified on the client side.
 
-[How to start using Nostr](https://github.com/vishalxl/nostr_console/discussions/31)
+[How to start using the Nostr](https://github.com/vishalxl/nostr_console/discussions/31)
 
-[Nostr client feature comparison](https://github.com/vishalxl/Nostr-Clients-Features-List/blob/main/Readme.md)
+[The Nostr client feature comparison](https://github.com/vishalxl/Nostr-Clients-Features-List/blob/main/Readme.md)
 
-[List of projects built on Nostr](https://github.com/aljazceru/awesome-nostr)
+[List of projects built on the Nostr](https://github.com/aljazceru/awesome-nostr)
 
 ## This is needed because other solutions are broken:
 
@@ -42,7 +42,7 @@ Everybody runs a client. It can be a native client, a web client, etc. To publis
 - It doesn't have many problems. I think it's great. I was going to use it as a basis for this, but
 - its protocol is too complicated because it wasn't thought about being an open protocol at all. It was just written in JavaScript in probably a quick way to solve a specific problem and grew from that, therefore it has weird and unnecessary quirks like signing a JSON string which must strictly follow the rules of [_ECMA-262 6th Edition_](https://www.ecma-international.org/ecma-262/6.0/#sec-json.stringify);
 - It insists on having a chain of updates from a single user, which feels unnecessary to me and something that adds bloat and rigidity to the thing — each server/user needs to store all the chain of posts to be sure the new one is valid. Why? (Maybe they have a good reason);
-- It is not as simple as Nostr, as it was primarily made for P2P syncing, with "pubs" being an afterthought;
+- It is not as simple as the Nostr, as it was primarily made for P2P syncing, with "pubs" being an afterthought;
 - Still, it may be worth considering using SSB instead of this custom protocol and just adapting it to the client-relay server model, because reusing a standard is always better than trying to get people in a new one.
 
 ### The problem with other solutions that require everybody to run their own server
@@ -50,7 +50,7 @@ Everybody runs a client. It can be a native client, a web client, etc. To publis
 - They require everybody to run their own server;
 - Sometimes people can still be censored in these because domain names can be censored.
 
-## How does Nostr work?
+## How does the Nostr work?
 
 - There are two components: __clients__ and __relays__. Each user runs a client. Anyone can run a relay.
 - Every user is identified by a public key. Every post is signed. Every client validates these signatures.
@@ -89,11 +89,11 @@ Everybody runs a client. It can be a native client, a web client, etc. To publis
 
 - **This is very simple. Why hasn't anyone done it before?**
 
-  I don't know, but I imagine it has to do with the fact that people making social networks are either companies wanting to make money or P2P activists who want to make a thing completely without servers. They both fail to see the specific mix of both worlds that Nostr uses.
+  I don't know, but I imagine it has to do with the fact that people making social networks are either companies wanting to make money or P2P activists who want to make a thing completely without servers. They both fail to see the specific mix of both worlds that the Nostr uses.
 
 - **How do I find people to follow?**
 
-  First, you must know them and get their public key somehow, either by asking or by seeing it referenced somewhere. Once you're inside a Nostr social network you'll be able to see them interacting with other people and then you can also start following and interacting with these others.
+  First, you must know them and get their public key somehow, either by asking or by seeing it referenced somewhere. Once you're inside a the Nostr social network you'll be able to see them interacting with other people and then you can also start following and interacting with these others.
 
 - **How do I find relays? What happens if I'm not connected to the same relays someone else is?**
 
@@ -107,7 +107,7 @@ Everybody runs a client. It can be a native client, a web client, etc. To publis
 
   The question is misleading. It assumes that relays are free dumb pipes that exist such that people can move data around through them. In this case yes, the incentives would not exist. This in fact could be said of DHT nodes in all other p2p network stacks: what incentive is there for people to run DHT nodes?
 
-- **Nostr enables you to move between server relays or use multiple relays but if these relays are just on AWS or Azure what’s the difference?**
+- **The Nostr enables you to move between server relays or use multiple relays but if these relays are just on AWS or Azure what’s the difference?**
 
   There are literally thousands of VPS providers scattered all around the globe today, there is not only AWS or Azure. AWS or Azure are exactly the providers used by single centralized service providers that need a lot of scale, and even then not just these two. For smaller relay servers any VPS will do the job very well.
 
@@ -117,7 +117,7 @@ See the [NIPs](https://github.com/nostr-protocol/nips) and especially [NIP-01](h
 
 ## Software
 
-There is a list of most software being built using Nostr on https://github.com/aljazceru/awesome-nostr that seemed to be almost complete last time I looked.
+There is a list of most software being built using the Nostr on https://github.com/aljazceru/awesome-nostr that seemed to be almost complete last time I looked.
 
 ## License
 
