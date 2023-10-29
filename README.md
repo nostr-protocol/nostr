@@ -54,7 +54,8 @@ Everybody runs a client. It can be a native client, a web client, etc. To publis
 
 - There are two components: __clients__ and __relays__. Each user runs a client. Anyone can run a relay.
 - Every user is identified by a public key. Every post is signed. Every client validates these signatures.
-- Clients fetch data from relays of their choice and publish data to other relays of their choice. A relay doesn't talk to another relay, only directly to users.
+- Clients fetch data from relays of their choice and publish data to other relays of their choice.
+- A relay doesn't need to talk to another relay, only directly to users. But it might do it. A relay service might want to serve its clients with content that was not posted to itself, so it can fetch data from another relay and add it to its database.
 - For example, to "follow" someone a user just instructs their client to query the relays it knows for posts from that public key.
 - On startup, a client queries data from all relays it knows for all users it follows (for example, all updates from the last day), then displays that data to the user chronologically.
 - A "post" can contain any kind of structured data, but the most used ones are going to find their way into the standard so all clients and relays can handle them seamlessly.
