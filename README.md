@@ -18,7 +18,7 @@ These relays can be hosted by anyone and have any rule or internal policy they w
 
 Relays can also lie about data published by others, but to ensure that isn't a problem, public-key cryptography is used and every note is signed. When you follow someone you're actually following their public key and clients will check notes received from relays to ensure they were properly signed.
 
-The hardest part is how to find in which relay you will find notes of each people you follow, since they can be anywhere, but it's not an unsolvable problem. There are multiple heuristics currently being used to approach this by different cleints and new ones can always be added.
+The hardest part is how to find in which relay you will find notes of each people you follow, since they can be anywhere, but it's not an unsolvable problem. There are multiple heuristics currently being used to approach this by different clients and new ones can always be added.
 
 ## Protocol specification
 
