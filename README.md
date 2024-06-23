@@ -6,7 +6,7 @@ It doesn't rely on any trusted central server, hence it is resilient; it is base
 
 The initial description of the idea can be found at https://fiatjaf.com/nostr.html.
 
-There are multiple websites, articles and video explanations about Nostr around the internet. You can find some of them linked from https://nostr.com/ or https://nostr.how.
+There are multiple websites, articles and video explanations about Nostr around the internet. You can find some of them linked from https://nostr.com/, https://njump.me/ or https://nostr.how.
 
 ## How it works
 
