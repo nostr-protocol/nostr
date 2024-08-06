@@ -26,6 +26,8 @@ See the [NIPs](https://github.com/nostr-protocol/nips) and especially [NIP-01](h
 
 ## Software
 
+A list of mostly-ready to use apps is kept at https://nostrapps.com/.
+
 A very big and daunting list of clients and libraries for all platforms and languages imaginable can be found at https://nostr.net/.
 
 ## License
