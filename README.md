@@ -1,3 +1,6 @@
+![PHOTO-2024-11-28-12-09-21](https://github.com/user-attachments/assets/f2b5a7bb-1aef-4130-8e01-b7c858ed7710)
+![PHOTO-2024-11-28-12-09-00](https://github.com/user-attachments/assets/9f6e2107-d6e6-4eb0-b460-d93674fe6d75)
+![PHOTO-2024-11-28-12-07-53](https://github.com/user-attachments/assets/a934372e-d270-4faa-91e7-8b8064e8dac0)
 # Nostr - Notes and Other Stuff Transmitted by Relays
 
 The simplest open protocol that is able to create a censorship-resistant global "social" network once and for all.
