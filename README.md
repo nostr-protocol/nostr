@@ -20,7 +20,8 @@ The hardest part is how to find in which relay you will find notes of each peopl
 
 ## Protocol specification
 
-See the [NIPs](https://github.com/nostr-protocol/nips) and especially [NIP-01](https://github.com/nostr-protocol/nips/blob/master/01.md) for a reasonably-detailed explanation of the protocol spec, it's very small.
+See the [NIPs](https://github.com/nostr-protocol/nips) and especially [NIP-01](https://github.com/nostr-protocol/nips/blob/master/01.md) for a reasonably-detailed explanation of the protocol spec, it's very small.![PHOTO-2024-11-29-07-01-28](https://github.com/user-attachments/assets/fce7c4ea-3b51-4b04-8aa3-f74ebbc3e358)
+
 
 ## Getting started
 
