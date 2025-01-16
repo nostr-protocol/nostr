@@ -14,7 +14,7 @@ It's a very simple idea: each person can publish their notes to multiple relays 
 
 These relays can be hosted by anyone and have any rule or internal policy they want. The fact that the protocol is open makes it so that, as long as there is any relay willing to host someone, they can still publish their stuff for their followers, and the followers can find their stuff in that relay.
 
-Relays can also lie about data published by others, but to ensure that isn't a problem, public-key cryptography is used and every note is signed. When you follow someone you're actually following their public key and clients will check notes received from relays to ensure they were properly signed.
+Relays can also lie about data published by others, but to ensure that isn't a problem, public-key cryptography is used and every note is signed. When you follow someone you're actually following their public key and clients will check notes received from relays to ensure they were properly signed. Here is a video that explains the role of relays pretty well: [nostr:nevent1qqsqhrasmmw0nnwjfeeka9sy4zl3c6rw5w2mtv4lugutl4luw57x7nqpr4mhxue69uhkummnw3ezucnfw33k76twv4ezuum0vd5kzmp0qyfhwumn8ghj7mmxve3ksctfdch8qatz9uq3wamnwvaz7tmjv4kxz7fwdehhxarj9e3xzmny9u76jrg5](https://njump.me/nevent1qqsqhrasmmw0nnwjfeeka9sy4zl3c6rw5w2mtv4lugutl4luw57x7nqpr4mhxue69uhkummnw3ezucnfw33k76twv4ezuum0vd5kzmp0qyfhwumn8ghj7mmxve3ksctfdch8qatz9uq3wamnwvaz7tmjv4kxz7fwdehhxarj9e3xzmny9u76jrg5).
 
 The hardest part is how to find in which relay you will find notes of each people you follow, since they can be anywhere. There are multiple heuristics currently being used to approach this issue. An animated description of one possible flow can be seen at https://how-nostr-works.pages.dev/#/outbox.
 
