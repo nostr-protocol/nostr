@@ -26,6 +26,10 @@ See the [NIPs](https://github.com/nostr-protocol/nips) and especially [NIP-01](h
 
 There are many ways to get started using Nostr, but one simple and recommended way is to visit https://start.njump.me/ and go from there.
 
+## Pifalls
+
+There are correct ways, and nostr in name only misguided ways to build on nostr. See the nostr guardrail guide to avoiding pitfalls [here](https://github.com/nostr-protocol/nostr/PITFALLS.MD).
+
 ## Software
 
 A list of mostly-ready to use apps is kept at https://nostrapps.com/.
