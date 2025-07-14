@@ -34,4 +34,4 @@ A very big and daunting list of clients and libraries for all platforms and lang
 
 ## License
 
-Public domain.
+Public domain (CC0).
