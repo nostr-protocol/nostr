@@ -32,6 +32,10 @@ A list of mostly-ready to use apps is kept at https://nostrapps.com/.
 
 A very big and daunting list of clients and libraries for all platforms and languages imaginable can be found at https://nostr.net/.
 
+## Interoperability
+
+Interoperabilty is tracked at https://github.com/nostrability/nostrability/issues. 
+
 ## License
 
 Public domain.
